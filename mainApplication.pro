@@ -31,7 +31,8 @@ unix: PKGCONFIG += opencv
 
 unix|win32: LIBS += -lboost_filesystem -lboost_system
 
-OTHER_FILES +=
+OTHER_FILES += \
+    README.md
 
 RESOURCES += \
     res.qrc
