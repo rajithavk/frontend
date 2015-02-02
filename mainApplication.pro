@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql
 
 TARGET = mainApplication
 TEMPLATE = app
@@ -15,14 +15,17 @@ TEMPLATE = app
 SOURCES += main.cpp\
         bow.cpp \
     functions.cpp \
-    imagelistmodel.cpp
+    imagelistmodel.cpp \
+    inventory.cpp
 
 HEADERS  += bow.h \
     functions.hpp \
     imagelistmodel.h \
-    CONV.h
+    CONV.h \
+    inventory.h
 
-FORMS    += bow.ui
+FORMS    += bow.ui \
+    inventory.ui
 
 CONFIG  += c++11
 

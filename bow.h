@@ -31,6 +31,8 @@ private slots:
 
     void on_comboBox_activated(const QString &arg1);
 
+    void on_pushButton_6_clicked();
+
 private:
     Ui::BOW *ui;
 };

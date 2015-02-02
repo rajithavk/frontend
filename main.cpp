@@ -1,4 +1,5 @@
 #include "bow.h"
+#include "inventory.h"
 #include <QApplication>
 #include <QFile>
 #include <QTextStream>
@@ -9,7 +10,6 @@ void loadStyleSheet(){
     QFile data(":/sheet/style.qss");
     QString style;
     if(data.open(QFile::ReadOnly)){
-        std::cout << "hola";
         QTextStream styleIn(&data);
         style = styleIn.readAll();
         data.close();
@@ -20,7 +20,10 @@ void loadStyleSheet(){
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    BOW w;
+    //BOW w;
+
+    inventory w;
+
     loadStyleSheet();
     w.show();
 

@@ -62,7 +62,7 @@ private :
         const String TRAINING_FOLDER = "BOW/images";
         const String CLASSIFIERS_FOLDER = "BOW/classifiers";
         const String TRAINING_SET_INFO = "BOW/trainingsetinfo.yml";
-		const int CLUSTERS = 2000;
+        const int CLUSTERS = 4000;
 
 public:
 		int loadTrainingSet();										// Load training images set into memory

@@ -99,6 +99,19 @@
      </rect>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_6">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>0</y>
+      <width>97</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Test an Image</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
