@@ -11,13 +11,13 @@ namespace Ui {
 class inventory;
 }
 
-class inventory : public QWidget
+class Inventory : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit inventory(QWidget *parent = 0);
-    ~inventory();
+    explicit Inventory(QWidget *parent = 0);
+    ~Inventory();
     inline bool isEmpty();
     inline void nextId();
 
@@ -37,6 +37,7 @@ private:
     QSqlDatabase db;
     QSqlQuery *qry;
     QSqlRecord rec;
+
 
 };
 

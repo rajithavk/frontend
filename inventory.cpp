@@ -2,7 +2,7 @@
 #include "ui_inventory.h"
 
 
-inventory::inventory(QWidget *parent) :
+Inventory::Inventory(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::inventory)
 {
@@ -29,12 +29,12 @@ inventory::inventory(QWidget *parent) :
 
 }
 
-inventory::~inventory()
+Inventory::~Inventory()
 {
     delete ui;
 }
 
-void inventory::on_pushButton_2_clicked()
+void Inventory::on_pushButton_2_clicked()
 {
     QList<QLineEdit*> les = this->findChildren<QLineEdit *>();
     foreach (QLineEdit *le, les) {
@@ -44,7 +44,7 @@ void inventory::on_pushButton_2_clicked()
     nextId();
 }
 
-bool inventory::isEmpty(){
+bool Inventory::isEmpty(){
     QList<QLineEdit *> les = this->findChildren<QLineEdit*>();
     foreach (QLineEdit *le, les) {
         if(le->text().isEmpty()){
@@ -54,7 +54,7 @@ bool inventory::isEmpty(){
     return false;
 }
 
-void inventory::on_pushButton_clicked()
+void Inventory::on_pushButton_clicked()
 {
     if(!isEmpty()){
 
@@ -86,7 +86,7 @@ void inventory::on_pushButton_clicked()
     }
 }
 
-void inventory::nextId(){
+void Inventory::nextId(){
     qry->prepare("SELECT MAX(id) FROM items");
     if(!qry->exec())
         qDebug()<<qry->lastError();
@@ -104,18 +104,18 @@ void inventory::nextId(){
     }
 }
 
-void inventory::on_pushButton_3_clicked()
+void Inventory::on_pushButton_3_clicked()
 {
     close();
 }
 
-void inventory::on_toolButton_clicked()
+void Inventory::on_toolButton_clicked()
 {
     QUrl dir = QFileDialog::getExistingDirectoryUrl(this,"Select Training Image Directory",QDir::currentPath(),QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
     ui->directoryLineEdit->setText(dir.path());
 }
 
-void inventory::on_toolButton_2_clicked()
+void Inventory::on_toolButton_2_clicked()
 {
     QUrl filename = QFileDialog::getOpenFileUrl(this,"Select an Image",QDir::currentPath(),tr("Images (*.jpg)"));
     ui->imageLineEdit->setText(filename.path());

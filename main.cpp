@@ -1,5 +1,7 @@
 #include "bow.h"
 #include "inventory.h"
+#include "imagegrab.h"
+#include "mainwindow.h"
 #include <QApplication>
 #include <QFile>
 #include <QTextStream>
@@ -21,8 +23,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     //BOW w;
-
-    inventory w;
+    //Imagegrab w;
+    //MainWindow w;
+    //inventory w;
 
     loadStyleSheet();
     w.show();

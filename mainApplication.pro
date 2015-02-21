@@ -4,11 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets network opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql
 
-TARGET = mainApplication
+TARGET = subdirs #mainApplication
 TEMPLATE = app
 
 
@@ -16,16 +16,42 @@ SOURCES += main.cpp\
         bow.cpp \
     functions.cpp \
     imagelistmodel.cpp \
-    inventory.cpp
+    inventory.cpp \
+    imagegrab.cpp \
+    imageitem.cpp \
+    imageview.cpp \
+    mainwindow.cpp \
+    qimagegrabber/dialogqimagegrabbersettings.cpp \
+    qimagegrabber/qimagegrabber.cpp \
+    qimagegrabber/qimagegrabberfile.cpp \
+    qimagegrabber/qimagegrabberhttp.cpp \
+    qimagegrabber/qimagegrabbericamview.cpp \
+    qimagegrabber/qimagegrabbermjpeg.cpp \
+    qimagegrabber/qimagegrabberv4l2.cpp
 
 HEADERS  += bow.h \
     functions.hpp \
     imagelistmodel.h \
     CONV.h \
-    inventory.h
+    inventory.h \
+    imagegrab.h \
+    imageitem.h \
+    imageview.h \
+    mainwindow.h \
+    qimagegrabber/dialogqimagegrabbersettings.h \
+    qimagegrabber/qimagegrabber.h \
+    qimagegrabber/qimagegrabberfile.h \
+    qimagegrabber/qimagegrabber_global.h \
+    qimagegrabber/qimagegrabberhttp.h \
+    qimagegrabber/qimagegrabbericamview.h \
+    qimagegrabber/qimagegrabbermjpeg.h \
+    qimagegrabber/qimagegrabberv4l2.h
 
 FORMS    += bow.ui \
-    inventory.ui
+    inventory.ui \
+    imagegrab.ui \
+    mainwindow.ui \
+    qimagegrabber/dialogqimagegrabbersettings.ui
 
 CONFIG  += c++11
 
