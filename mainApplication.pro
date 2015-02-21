@@ -17,7 +17,6 @@ SOURCES += main.cpp\
     functions.cpp \
     imagelistmodel.cpp \
     inventory.cpp \
-    imagegrab.cpp \
     imageitem.cpp \
     imageview.cpp \
     mainwindow.cpp \
@@ -27,14 +26,14 @@ SOURCES += main.cpp\
     qimagegrabber/qimagegrabberhttp.cpp \
     qimagegrabber/qimagegrabbericamview.cpp \
     qimagegrabber/qimagegrabbermjpeg.cpp \
-    qimagegrabber/qimagegrabberv4l2.cpp
+    qimagegrabber/qimagegrabberv4l2.cpp \
+    imagecapture.cpp
 
 HEADERS  += bow.h \
     functions.hpp \
     imagelistmodel.h \
     CONV.h \
     inventory.h \
-    imagegrab.h \
     imageitem.h \
     imageview.h \
     mainwindow.h \
@@ -45,13 +44,14 @@ HEADERS  += bow.h \
     qimagegrabber/qimagegrabberhttp.h \
     qimagegrabber/qimagegrabbericamview.h \
     qimagegrabber/qimagegrabbermjpeg.h \
-    qimagegrabber/qimagegrabberv4l2.h
+    qimagegrabber/qimagegrabberv4l2.h \
+    imagecapture.h
 
 FORMS    += bow.ui \
     inventory.ui \
-    imagegrab.ui \
     mainwindow.ui \
-    qimagegrabber/dialogqimagegrabbersettings.ui
+    qimagegrabber/dialogqimagegrabbersettings.ui \
+    imagecapture.ui
 
 CONFIG  += c++11
 

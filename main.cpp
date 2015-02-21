@@ -1,7 +1,7 @@
 #include "bow.h"
 #include "inventory.h"
-#include "imagegrab.h"
 #include "mainwindow.h"
+#include "imagecapture.h"
 #include <QApplication>
 #include <QFile>
 #include <QTextStream>
@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     //Imagegrab w;
     //MainWindow w;
     //inventory w;
+    ImageCapture w(0);
 
     loadStyleSheet();
     w.show();
