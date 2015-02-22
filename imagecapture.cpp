@@ -31,6 +31,10 @@ ImageCapture::~ImageCapture()
 
 void ImageCapture::closeEvent(QCloseEvent *event){
     Q_UNUSED(event)
+    if(imageSet.size()>0){
+        emit gotImageSet(imageSet);
+        qDebug() << "imageset emmited";
+    }
 }
 
 
@@ -103,7 +107,9 @@ void ImageCapture::on_pushButton_clicked()
 {
     if(currentGrabber!=NULL){
         if(currentGrabber->isGrabbing()){
-
+            QPixmap img = QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage());
+            imageSet.append(img);
+            ui->labelLastImage->setPixmap(img);
         }
     }
 }

@@ -11,6 +11,7 @@
 #include "qimagegrabber/qimagegrabbermjpeg.h"
 #include "qimagegrabber/dialogqimagegrabbersettings.h"
 
+
 namespace Ui {
 class ImageCapture;
 }
@@ -37,6 +38,9 @@ private:
 
     void setImageGrabber(QImageGrabber *gb);
 
+signals:
+    void gotImageSet(QVector<QPixmap>);
+
 private slots:
 
     void on_comboBoxGrabberTypes_activated(int index);
@@ -47,6 +51,7 @@ private slots:
 
     void on_pushButtonStart_clicked();
     void on_pushButtonSettings_clicked();
+    void on_pushButton_clicked();
 };
 
 #endif // IMAGECAPTURE_H

@@ -12,6 +12,7 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
     void setImage(QImage *newImage);
+    QImage getImage();
 
 private:
     QImage image;

@@ -23,3 +23,7 @@ void ImageItem::setImage(QImage *newImage)
 {
     image = newImage->copy();
 }
+
+QImage ImageItem::getImage(){
+    return image;
+}

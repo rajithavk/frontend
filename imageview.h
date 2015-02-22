@@ -15,11 +15,12 @@ class ImageView : public QGraphicsView
 public:
     explicit ImageView(QWidget *parent = 0);
     void grabbingStarted();
+    ImageItem *imageItem;
 
 private:
     unsigned int zoomSteps;
     QGraphicsScene *scene;
-    ImageItem *imageItem;
+
     bool firstImageReceieved;
 
 signals:

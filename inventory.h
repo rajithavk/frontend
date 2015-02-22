@@ -6,6 +6,7 @@
 #include <QtSql/QtSql>
 #include <QMessageBox>
 #include <QFileDialog>
+#include "imagecapture.h"
 
 namespace Ui {
 class inventory;
@@ -31,12 +32,19 @@ private slots:
     void on_toolButton_clicked();
 
     void on_toolButton_2_clicked();
+    void on_imageset_recieve(QVector<QPixmap> );
+
+    void on_pushButton_4_clicked();
 
 private:
     Ui::inventory *ui;
     QSqlDatabase db;
     QSqlQuery *qry;
     QSqlRecord rec;
+    ImageCapture *newCapture;
+    QVector<QPixmap> imageSet;
+
+    int saveImageSet();
 
 
 };

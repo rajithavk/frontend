@@ -58,6 +58,9 @@ void Inventory::on_pushButton_clicked()
 {
     if(!isEmpty()){
 
+        if(!saveImageSet())
+            return;
+
         qry->prepare("INSERT INTO items (id, title , description , price , directory , image ) VALUES(:id,:title,:description,:price,:directory,:image)");
         qry->bindValue(":id",ui->iDLineEdit->text().toInt());
         qry->bindValue(":title",ui->titleLineEdit->text());
@@ -123,4 +126,43 @@ void Inventory::on_toolButton_2_clicked()
     QPixmap mp(filename.path());
     ui->label->setPixmap(mp);
     ui->label->setScaledContents(true);
+}
+
+
+void Inventory::on_imageset_recieve(QVector<QPixmap> imgset){
+    imageSet = imgset;
+    if(imageSet.size()>0){
+        qDebug() << QString::number(imageSet.size()) + " images recieved";
+    }
+}
+
+void Inventory::on_pushButton_4_clicked()
+{
+    newCapture = new ImageCapture();
+    newCapture->show();
+    connect(newCapture,SIGNAL(gotImageSet(QVector<QPixmap>)),this,SLOT(on_imageset_recieve(QVector<QPixmap>)));
+}
+
+int Inventory::saveImageSet(){
+    if(ui->directoryLineEdit->text().length() > 0){
+        QUrl dir_path = QUrl::fromUserInput(ui->directoryLineEdit->text());
+        if(dir_path.isValid()){
+            QDir dir = dir_path.toLocalFile();
+            if(!dir.exists()){
+                if(dir.mkpath(dir.path()))
+                    qDebug() << "Directory Created";
+            }
+            int count = 0;
+            foreach (QPixmap i, imageSet) {
+                QString path = dir.path() + "/" + QString::number(count);
+                if(!i.save(path,"JPG"))
+                   qDebug() << path + " image not created on disk";
+
+                count++;
+            }
+            qDebug() << "Images Saved to Directory " + dir_path.toString();
+            return 1;
+        }
+    }
+    return 0;
 }
