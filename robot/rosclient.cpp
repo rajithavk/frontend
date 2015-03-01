@@ -77,12 +77,13 @@ void ROSClient::on_connected(){
     ws.sendTextMessage(QString::fromStdString(json::Serialize(subObj)));
 
     qDebug() << "Subscribed";
+    emit(conState("Connected"));
 }
 
 void ROSClient::on_disonnect()
 {
     qDebug() << "Websocket Disconnected";
-    emit(closed());
+    emit(conState("Disconnected"));
 
 }
 

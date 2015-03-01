@@ -153,3 +153,21 @@ void ImageCapture::on_btnStop_clicked()
 {
     robot.publish("stop");
 }
+
+void ImageCapture::gotConState(QString state)
+{
+    if(state=="Connected")
+        ui->btnConnect->setText("Disconnect");
+    else
+        ui->btnConnect->setText("Connect");
+}
+
+void ImageCapture::on_pushButton_2_clicked()
+{
+    robot.publish("run");
+}
+
+void ImageCapture::snapIt()
+{
+
+}

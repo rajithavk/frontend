@@ -57,6 +57,11 @@ private slots:
     void on_btnLeft_clicked();
     void on_btnBack_clicked();
     void on_btnStop_clicked();
+
+    void gotConState(QString state);
+    void on_pushButton_2_clicked();
+
+    void snapIt();
 };
 
 #endif // IMAGECAPTURE_H

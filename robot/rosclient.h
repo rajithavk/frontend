@@ -24,7 +24,7 @@ private:
 
 
 signals:
-    void closed();
+    void conState(QString);
     void robotSaid(QString);
     void snapIt();
 
