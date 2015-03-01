@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>810</width>
-    <height>532</height>
+    <height>629</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -92,7 +92,7 @@ p, li { white-space: pre-wrap; }
      <x>10</x>
      <y>80</y>
      <width>576</width>
-     <height>298</height>
+     <height>411</height>
     </rect>
    </property>
   </widget>
@@ -100,7 +100,7 @@ p, li { white-space: pre-wrap; }
    <property name="geometry">
     <rect>
      <x>490</x>
-     <y>390</y>
+     <y>510</y>
      <width>97</width>
      <height>41</height>
     </rect>
@@ -112,8 +112,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="labelLastImage">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>390</y>
+     <x>30</x>
+     <y>480</y>
      <width>131</width>
      <height>111</height>
     </rect>
@@ -125,8 +125,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>600</x>
-     <y>10</y>
+     <x>590</x>
+     <y>20</y>
      <width>211</width>
      <height>451</height>
     </rect>
@@ -212,6 +212,19 @@ p, li { white-space: pre-wrap; }
      <string>Back</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QCheckBox" name="chkFilp">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>10</y>
+     <width>121</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Flip Vertical</string>
+   </property>
   </widget>
  </widget>
  <customwidgets>

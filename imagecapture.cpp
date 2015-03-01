@@ -75,7 +75,13 @@ void ImageCapture::setImageGrabber(QImageGrabber *gb){
 }
 
 void ImageCapture::newImageReceived(QImage *img){
-    ui->graphicsViewImage->newImageReceieved(img);
+    QImage timg;
+    if(ui->chkFilp->isChecked())
+        timg =  img->mirrored(false,true);
+    else
+        timg = img->copy();
+
+    ui->graphicsViewImage->newImageReceieved(&timg);
 }
 
 void ImageCapture::newFPSCalculated(double fps, double avg){
