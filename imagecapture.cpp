@@ -10,7 +10,7 @@ ImageCapture::ImageCapture(QWidget *parent) :
     mjpgGrabber = new QImageGrabberMjpeg(this);
     imageGrabbers.append(mjpgGrabber);
     settings.beginGroup("mjpgGrabber");
-    mjpgGrabber->setSource(settings.value("url","http://").toString());
+    mjpgGrabber->setSource(settings.value("url").toString());
     settings.endGroup();
 
     foreach(QImageGrabber *currentGrabber,imageGrabbers){
@@ -35,6 +35,10 @@ void ImageCapture::closeEvent(QCloseEvent *event){
         emit gotImageSet(imageSet);
         qDebug() << "imageset emmited";
     }
+
+    settings.beginGroup("mjpgGrabber");
+    settings.setValue("url",mjpgGrabber->currentSource());
+    settings.endGroup();
 }
 
 
@@ -112,4 +116,34 @@ void ImageCapture::on_pushButton_clicked()
             ui->labelLastImage->setPixmap(img);
         }
     }
+}
+
+void ImageCapture::on_btnConnect_clicked()
+{
+    robot.open("ws://10.0.0.1:9090");
+}
+
+void ImageCapture::on_btnRight_clicked()
+{
+    robot.publish("right");
+}
+
+void ImageCapture::on_btnForward_clicked()
+{
+    robot.publish("go");
+}
+
+void ImageCapture::on_btnLeft_clicked()
+{
+    robot.publish("left");
+}
+
+void ImageCapture::on_btnBack_clicked()
+{
+    robot.publish("back");
+}
+
+void ImageCapture::on_btnStop_clicked()
+{
+    robot.publish("stop");
 }

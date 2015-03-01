@@ -36,6 +36,7 @@ private slots:
 
     void on_pushButton_4_clicked();
 
+
 private:
     Ui::inventory *ui;
     QSqlDatabase db;
@@ -43,6 +44,7 @@ private:
     QSqlRecord rec;
     ImageCapture *newCapture;
     QVector<QPixmap> imageSet;
+    QUrl *defaultUrl;
 
     int saveImageSet();
 

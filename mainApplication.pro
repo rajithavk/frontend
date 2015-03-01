@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets network opengl
+QT       += core gui widgets network opengl websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql
 
@@ -27,7 +27,9 @@ SOURCES += main.cpp\
     qimagegrabber/qimagegrabbericamview.cpp \
     qimagegrabber/qimagegrabbermjpeg.cpp \
     qimagegrabber/qimagegrabberv4l2.cpp \
-    imagecapture.cpp
+    imagecapture.cpp \
+    robot/json.cpp \
+    robot/rosclient.cpp
 
 HEADERS  += bow.h \
     functions.hpp \
@@ -45,7 +47,9 @@ HEADERS  += bow.h \
     qimagegrabber/qimagegrabbericamview.h \
     qimagegrabber/qimagegrabbermjpeg.h \
     qimagegrabber/qimagegrabberv4l2.h \
-    imagecapture.h
+    imagecapture.h \
+    robot/json.h \
+    robot/rosclient.h
 
 FORMS    += bow.ui \
     inventory.ui \
@@ -66,3 +70,4 @@ OTHER_FILES += \
 RESOURCES += \
     res.qrc
 
+QMAKE_CXXFLAGS += -Wno-unused-parameter

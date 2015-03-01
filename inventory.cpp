@@ -8,6 +8,10 @@ Inventory::Inventory(QWidget *parent) :
 {
 
     ui->setupUi(this);
+    defaultUrl = new QUrl(QDir::currentPath()+"/BOW/images/");
+    //ui->imageScrollBar->setEnabled(true);
+    //ui->imageScrollBar->setRange(1,10);
+
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("dbinventory.db");
 
@@ -19,13 +23,15 @@ Inventory::Inventory(QWidget *parent) :
     qDebug("Connected to Database");
 
     qry = new QSqlQuery(db);
-    qry->prepare("CREATE TABLE IF NOT EXISTS items (id INTEGER UNIQUE PRIMARY KEY, title VARCHAR(20), description VARCHAR(40), price DOUBLE, directory VARCHAR(100), image VARCHAR(100))");
+    qry->prepare("CREATE TABLE IF NOT EXISTS items (id INTEGER UNIQUE PRIMARY KEY, title VARCHAR(20) DEFAULT 'NULL', description VARCHAR(40) DEFAULT 'NULL', price DOUBLE, directory VARCHAR(100) DEFAULT 'NULL', image VARCHAR(100),classifier VARCHAR(100) DEFAULT 'NULL')");
     if(!qry->exec())
         qDebug()<<qry->lastError();
     else
         qDebug("Table Initialised");
 
     nextId();
+
+     ui->directoryLineEdit->setText(defaultUrl->path()+ui->iDLineEdit->text());
 
 }
 
@@ -133,6 +139,10 @@ void Inventory::on_imageset_recieve(QVector<QPixmap> imgset){
     imageSet = imgset;
     if(imageSet.size()>0){
         qDebug() << QString::number(imageSet.size()) + " images recieved";
+        //ui->imageScrollBar->setMinimum(1);
+       // ui->imageScrollBar->setMaximum(imageSet.size());
+       // ui->imageScrollBar->setEnabled(true);
+
     }
 }
 
@@ -151,6 +161,13 @@ int Inventory::saveImageSet(){
             if(!dir.exists()){
                 if(dir.mkpath(dir.path()))
                     qDebug() << "Directory Created";
+            }else{
+                QMessageBox msg;
+                msg.setText("Item Added");
+                msg.setInformativeText("New Item Addition Successful");
+                msg.setIcon(QMessageBox::Critical);
+                msg.exec();
+                return 0;
             }
             int count = 0;
             foreach (QPixmap i, imageSet) {
