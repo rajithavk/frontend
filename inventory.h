@@ -17,7 +17,7 @@ class Inventory : public QWidget
     Q_OBJECT
 
 public:
-    explicit Inventory(QWidget *parent = 0);
+    explicit Inventory(int id=0,QWidget *parent = 0);
     ~Inventory();
     inline bool isEmpty();
     inline void nextId();
@@ -36,7 +36,6 @@ private slots:
 
     void on_pushButton_4_clicked();
 
-
 private:
     Ui::inventory *ui;
     QSqlDatabase db;
@@ -45,9 +44,11 @@ private:
     ImageCapture *newCapture;
     QVector<QPixmap> imageSet;
     QUrl *defaultUrl;
-
+    bool editingMode;
     int saveImageSet();
 
+signals :
+    void exit();
 
 };
 

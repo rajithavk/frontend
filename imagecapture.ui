@@ -96,24 +96,11 @@ p, li { white-space: pre-wrap; }
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>490</x>
-     <y>510</y>
-     <width>97</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Capture</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="labelLastImage">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>480</y>
+     <x>10</x>
+     <y>500</y>
      <width>131</width>
      <height>111</height>
     </rect>
@@ -210,6 +197,19 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="text">
      <string>Back</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>350</y>
+      <width>97</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Capture</string>
     </property>
    </widget>
   </widget>

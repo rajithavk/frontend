@@ -2,55 +2,125 @@
 #include "ui_inventory.h"
 
 
-Inventory::Inventory(QWidget *parent) :
+Inventory::Inventory(int id,QWidget *parent) :
     QWidget(parent),
     ui(new Ui::inventory)
 {
 
     ui->setupUi(this);
-    defaultUrl = new QUrl(QDir::currentPath()+"/BOW/images/");
-    //ui->imageScrollBar->setEnabled(true);
-    //ui->imageScrollBar->setRange(1,10);
+    connect(this,SIGNAL(exit()),this,SLOT(close()));
+    editingMode=(id==0)?false:true;
 
-    db = QSqlDatabase::addDatabase("QSQLITE");
+    defaultUrl = new QUrl(QDir::currentPath()+"/BOW/images/");  //Default Location to Create Sample Images Directories
+    db = QSqlDatabase::addDatabase("QSQLITE");                  //Creating SQLite Database
     db.setDatabaseName("dbinventory.db");
 
-    if(!db.open()){
+    if(!db.open()){                                             //Trying to Open the DB
         qDebug() << db.lastError();
         qFatal("Failed to Connect to Database");
     }
 
     qDebug("Connected to Database");
 
-    qry = new QSqlQuery(db);
-    qry->prepare("CREATE TABLE IF NOT EXISTS items (id INTEGER UNIQUE PRIMARY KEY, title VARCHAR(20) DEFAULT 'NULL', description VARCHAR(40) DEFAULT 'NULL', price DOUBLE, directory VARCHAR(100) DEFAULT 'NULL', image VARCHAR(100),classifier VARCHAR(100) DEFAULT 'NULL')");
+    qry = new QSqlQuery(db);                                    //Prepare the initial Query, if the Table doesn't exist, create it
+
+    qry->prepare("CREATE TABLE IF NOT EXISTS items (id INTEGER UNIQUE PRIMARY KEY, title VARCHAR(20) DEFAULT 'NULL', description VARCHAR(40) DEFAULT 'NULL', price DOUBLE, directory VARCHAR(100) DEFAULT 'NULL', image VARCHAR(100))");
     if(!qry->exec())
         qDebug()<<qry->lastError();
     else
         qDebug("Table Initialised");
 
-    nextId();
+    if(id!=0){                                                  //id>0 for Updating a jewellery
+        this->setWindowTitle("Update Jewellery Information");
+        ui->pushButton->setText("Update");
+        ui->pushButton_2->setText("Delete");
 
-     ui->directoryLineEdit->setText(defaultUrl->path()+ui->iDLineEdit->text());
+        qry->prepare("SELECT * FROM items WHERE id = :id");
+        qry->bindValue(":id",id);
+        if(!qry->exec())
+            qDebug() << qry->lastError();
+        else
+        {
+            qDebug("Jewellery Record retrieved for Editing");
+            if(!qry->next())
+            {
+                qDebug("Jewellery Does not Exist");
+                //emit(exit());
+            }
+
+                ui->iDLineEdit->setText(qry->value(0).toString());
+                ui->titleLineEdit->setText(qry->value(1).toString());
+                ui->descriptionLineEdit->setText(qry->value(2).toString());
+                ui->priceLineEdit->setText(qry->value(3).toString());
+                ui->directoryLineEdit->setText(qry->value(4).toString());
+                ui->imageLineEdit->setText(qry->value(5).toString());
+
+                QPixmap mp(ui->imageLineEdit->text());
+                ui->label->setPixmap(mp);
+                ui->label->setScaledContents(true);
+
+        }
+    }
+    else{                                                           // id==0 for New Jwellery
+        nextId();                                                   //Get the ID for the new jewellery to be added.
+        ui->directoryLineEdit->setText(defaultUrl->path()+ui->iDLineEdit->text());  // Generate the Directory path for the Image Store
+
+    }
 
 }
 
 Inventory::~Inventory()
 {
     delete ui;
+    delete qry;
 }
 
-void Inventory::on_pushButton_2_clicked()
+void Inventory::on_pushButton_2_clicked()                       // Clearing the Form
 {
-    QList<QLineEdit*> les = this->findChildren<QLineEdit *>();
-    foreach (QLineEdit *le, les) {
-        le->clear();
+    if(editingMode){
+        QMessageBox msg;
+        msg.setWindowTitle("?");
+        msg.setText("Do you Really Want to delete this Item?");
+        msg.setInformativeText("Item will be Permanently Deleted");
+        msg.setIcon(QMessageBox::Question);
+        msg.setStandardButtons(QMessageBox::Abort|QMessageBox::Ok);
+        msg.setDefaultButton(QMessageBox::Abort);
+        qry->prepare("DELETE FROM items WHERE id = :id");
+        qry->bindValue(":id",ui->iDLineEdit->text());
+        int ret = msg.exec();
+        switch (ret) {
+        case QMessageBox::Abort : break;
+        case QMessageBox::Ok    : {
+                                    if(!qry->exec())
+                                        qDebug("Unable to Delete The Item");
+                                    else{
+                                        qDebug("Item Deleted Succesfully");
+                                        QMessageBox msg1;
+                                        msg1.setWindowTitle("Done");
+                                        msg1.setText("Item Deleted");
+                                        msg1.setIcon(QMessageBox::Information);
+                                        msg1.exec();
+                                        emit(exit());
+                                    }
+                                    break;
+                                }
+        default:
+            break;
+        }
+
     }
-    ui->label->clear();
-    nextId();
+    else{
+        QList<QLineEdit*> les = this->findChildren<QLineEdit *>();
+        foreach (QLineEdit *le, les) {
+            le->clear();
+        }
+        ui->label->clear();
+        nextId();
+    }
+
 }
 
-bool Inventory::isEmpty(){
+bool Inventory::isEmpty(){                                      // Check if the Form is empty
     QList<QLineEdit *> les = this->findChildren<QLineEdit*>();
     foreach (QLineEdit *le, les) {
         if(le->text().isEmpty()){
@@ -60,14 +130,18 @@ bool Inventory::isEmpty(){
     return false;
 }
 
-void Inventory::on_pushButton_clicked()
+void Inventory::on_pushButton_clicked()                         // INSERTing the new RECORD into the TABLE
 {
     if(!isEmpty()){
 
-        if(!saveImageSet())
-            return;
-
-        qry->prepare("INSERT INTO items (id, title , description , price , directory , image ) VALUES(:id,:title,:description,:price,:directory,:image)");
+        if(editingMode){
+            qry->prepare("UPDATE items SET id = :id, title = :title, description = :description, price = :price, directory = :directory, image = :image");
+        }
+        else{
+            if(!saveImageSet())
+                return;
+            qry->prepare("INSERT INTO items (id, title , description , price , directory , image ) VALUES(:id,:title,:description,:price,:directory,:image)");
+        }
         qry->bindValue(":id",ui->iDLineEdit->text().toInt());
         qry->bindValue(":title",ui->titleLineEdit->text());
         qry->bindValue(":description",ui->descriptionLineEdit->text());
@@ -79,12 +153,22 @@ void Inventory::on_pushButton_clicked()
             qDebug()<<qry->lastError();
         else{
             qDebug("Record Added");
-
-            QMessageBox msg;
-            msg.setText("Item Added");
-            msg.setInformativeText("New Item Addition Successful");
-            msg.setIcon(QMessageBox::Information);
-            msg.exec();
+            if(editingMode){
+                QMessageBox msg;
+                msg.setWindowTitle("Update");
+                msg.setText("Item Update");
+                msg.setInformativeText("Item Update Successful");
+                msg.setIcon(QMessageBox::Information);
+                msg.exec();
+            }
+            else{
+                QMessageBox msg;
+                msg.setWindowTitle("Add");
+                msg.setText("Item Added");
+                msg.setInformativeText("New Item Addition Successful");
+                msg.setIcon(QMessageBox::Information);
+                msg.exec();
+            }
         }
     }else{
         QMessageBox msg;
@@ -113,20 +197,21 @@ void Inventory::nextId(){
     }
 }
 
-void Inventory::on_pushButton_3_clicked()
+void Inventory::on_pushButton_3_clicked()                   //Close the Window
 {
-    close();
+    emit(exit());
 }
 
-void Inventory::on_toolButton_clicked()
+void Inventory::on_toolButton_clicked()                     // Browsing for Training Images (if Needed)
 {
     QUrl dir = QFileDialog::getExistingDirectoryUrl(this,"Select Training Image Directory",QDir::currentPath(),QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
     ui->directoryLineEdit->setText(dir.path());
 }
 
-void Inventory::on_toolButton_2_clicked()
+void Inventory::on_toolButton_2_clicked()                   //Set the Thubnail Image
 {
-    QUrl filename = QFileDialog::getOpenFileUrl(this,"Select an Image",QDir::currentPath(),tr("Images (*.jpg)"));
+
+    QUrl filename = QFileDialog::getOpenFileUrl(this,"Select an Image",ui->directoryLineEdit->text(),tr("Images (*.jpg)"));
     ui->imageLineEdit->setText(filename.path());
 
     QPixmap mp(filename.path());
@@ -135,25 +220,22 @@ void Inventory::on_toolButton_2_clicked()
 }
 
 
-void Inventory::on_imageset_recieve(QVector<QPixmap> imgset){
+void Inventory::on_imageset_recieve(QVector<QPixmap> imgset){       //SLOT to Receive the new image set
     imageSet = imgset;
     if(imageSet.size()>0){
         qDebug() << QString::number(imageSet.size()) + " images recieved";
-        //ui->imageScrollBar->setMinimum(1);
-       // ui->imageScrollBar->setMaximum(imageSet.size());
-       // ui->imageScrollBar->setEnabled(true);
 
     }
 }
 
-void Inventory::on_pushButton_4_clicked()
+void Inventory::on_pushButton_4_clicked()                           // Open the Image Capture Window
 {
     newCapture = new ImageCapture();
     newCapture->show();
     connect(newCapture,SIGNAL(gotImageSet(QVector<QPixmap>)),this,SLOT(on_imageset_recieve(QVector<QPixmap>)));
 }
 
-int Inventory::saveImageSet(){
+int Inventory::saveImageSet(){                                      // Save the Image Set to the Given Directory
     if(ui->directoryLineEdit->text().length() > 0){
         QUrl dir_path = QUrl::fromUserInput(ui->directoryLineEdit->text());
         if(dir_path.isValid()){
