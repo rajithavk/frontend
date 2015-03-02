@@ -11,6 +11,12 @@
 #include "qimagegrabber/qimagegrabbermjpeg.h"
 #include "qimagegrabber/dialogqimagegrabbersettings.h"
 #include  "robot/rosclient.h"
+#include <stdlib.h>
+#include <opencv2/core/core.hpp>
+#include "robot/crop.h"
+
+using namespace cv;
+using namespace std;
 
 namespace Ui {
 class ImageCapture;
@@ -36,6 +42,8 @@ private:
     QVector<QPixmap> imageSet;
     void setImageGrabber(QImageGrabber *gb);
     ROSClient robot;
+
+    vector<Mat> testImages;
 
 signals:
     void gotImageSet(QVector<QPixmap>);

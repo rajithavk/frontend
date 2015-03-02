@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     //BOW w;
     //Imagegrab w;
     //MainWindow w;
-    Inventory w(0,0);
+    Inventory w(1,0);
     //ImageCapture w(0);
 
     loadStyleSheet();

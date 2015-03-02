@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     qimagegrabber/qimagegrabberv4l2.cpp \
     imagecapture.cpp \
     robot/json.cpp \
-    robot/rosclient.cpp
+    robot/rosclient.cpp \
+    robot/crop.cpp
 
 HEADERS  += bow.h \
     functions.hpp \
@@ -49,7 +50,8 @@ HEADERS  += bow.h \
     qimagegrabber/qimagegrabberv4l2.h \
     imagecapture.h \
     robot/json.h \
-    robot/rosclient.h
+    robot/rosclient.h \
+    robot/crop.h
 
 FORMS    += bow.ui \
     inventory.ui \

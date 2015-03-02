@@ -165,9 +165,14 @@ void ImageCapture::gotConState(QString state)
 void ImageCapture::on_pushButton_2_clicked()
 {
     robot.publish("run");
+    connect(&robot, SIGNAL(snapIt()),this,SLOT(snapIt()));
 }
 
 void ImageCapture::snapIt()
 {
+    //QPixmap snap(QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage()));
+    vector<Mat> temp;
+    temp = convert(ui->graphicsViewImage->imageItem->getImage());
+    testImages.insert(testImages.end(),temp.begin(),temp.end());
 
 }
