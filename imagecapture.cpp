@@ -166,6 +166,7 @@ void ImageCapture::on_pushButton_2_clicked()
 {
     robot.publish("run");
     connect(&robot, SIGNAL(snapIt()),this,SLOT(snapIt()));
+    connect(&robot,SIGNAL(robotSaid(QString)),this,SLOT(fromRobot(QString)));
 }
 
 void ImageCapture::snapIt()
@@ -175,4 +176,13 @@ void ImageCapture::snapIt()
     temp = convert(ui->graphicsViewImage->imageItem->getImage());
     testImages.insert(testImages.end(),temp.begin(),temp.end());
 
+}
+
+void ImageCapture::fromRobot(QString m)
+{
+    QMessageBox msg;
+    msg.setWindowTitle("Finished");
+    msg.setText("Autorun Finished");
+    msg.setIcon(QMessageBox::Information);
+    msg.exec();
 }

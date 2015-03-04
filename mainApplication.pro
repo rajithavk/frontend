@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     imagecapture.cpp \
     robot/json.cpp \
     robot/rosclient.cpp \
-    robot/crop.cpp
+    robot/crop.cpp \
+    welcome.cpp
 
 HEADERS  += bow.h \
     functions.hpp \
@@ -51,13 +52,15 @@ HEADERS  += bow.h \
     imagecapture.h \
     robot/json.h \
     robot/rosclient.h \
-    robot/crop.h
+    robot/crop.h \
+    welcome.h
 
 FORMS    += bow.ui \
     inventory.ui \
     mainwindow.ui \
     qimagegrabber/dialogqimagegrabbersettings.ui \
-    imagecapture.ui
+    imagecapture.ui \
+    welcome.ui
 
 CONFIG  += c++11
 

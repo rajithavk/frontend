@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QSettings>
 #include <QCloseEvent>
+#include <QMessageBox>
 
 
 #include "qimagegrabber/qimagegrabber.h"
@@ -70,6 +71,7 @@ private slots:
     void on_pushButton_2_clicked();
 
     void snapIt();
+    void fromRobot(QString m);
 };
 
 #endif // IMAGECAPTURE_H

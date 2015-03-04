@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
+#include "welcome.h"
 
 
 void loadStyleSheet(){
@@ -25,8 +26,9 @@ int main(int argc, char *argv[])
     //BOW w;
     //Imagegrab w;
     //MainWindow w;
-    Inventory w(1,0);
+    //Inventory w(1,0);
     //ImageCapture w(0);
+    welcome w;
 
     loadStyleSheet();
     w.show();
