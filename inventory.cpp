@@ -258,7 +258,7 @@ int Inventory::saveImageSet(){                                      // Save the 
             }
             int count = 0;
             foreach (QPixmap i, imageSet) {
-                QString path = dir.path() + "/" + QString::number(count);
+                QString path = dir.path() + "/" + QString::number(count) + ".jpg";
                 if(!i.save(path,"JPG"))
                    qDebug() << path + " image not created on disk";
 

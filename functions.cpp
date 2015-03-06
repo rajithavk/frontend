@@ -8,16 +8,19 @@
 #include "functions.hpp"
 
 vision::vision(){
+    
     create_directories("BOW");
     create_directories(CLASSIFIERS_FOLDER);
     create_directories(TRAINING_FOLDER);
+    
 	bowTrainer = (new BOWKMeansTrainer(CLUSTERS));
 	descriptorMatcher = (new BruteForceMatcher<L2<float> >);
 	//Ptr<DescriptorMatcher> matcher(new FlannBasedMatcher);
 	SIFT sf;
 	sf.set("edgeThreshold",edgeThreshold);
 	featureDetector = (new SiftFeatureDetector(sf));
-	descriptorExtractor = (new SiftDescriptorExtractor(sf));
+    descriptorExtractor = (new SiftDescriptorExtractor(sf));
+    //descriptorExtractor = DescriptorExtractor::create("OpponentSIFT");
 	//cout << featureDetector->getDouble("edgeThreshold");
 	bowDescriptorExtractor = (new BOWImgDescriptorExtractor(descriptorExtractor,descriptorMatcher));
 }
@@ -287,7 +290,7 @@ int vision::loadTrainingSet(){
 			if(dir.level()==1){
 				string filename = path(*dir).string();
 				cout << filename << endl;
-				pair<string,Mat> tmp(class_,imread(filename,CV_LOAD_IMAGE_GRAYSCALE));
+                pair<string,Mat> tmp(class_,imread(filename,CV_LOAD_IMAGE_GRAYSCALE));
 				training_set.insert(tmp);
 				num_of_samples++;
 			}
