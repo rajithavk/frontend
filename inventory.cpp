@@ -64,7 +64,7 @@ Inventory::Inventory(int id,QWidget *parent) :
     else{                                                           // id==0 for New Jwellery
         nextId();                                                   //Get the ID for the new jewellery to be added.
         ui->directoryLineEdit->setText(defaultUrl->path()+ui->iDLineEdit->text());  // Generate the Directory path for the Image Store
-
+        ui->priceLineEdit->setText("0");
     }
 
 }
@@ -116,6 +116,8 @@ void Inventory::on_pushButton_2_clicked()                       // Clearing the 
         }
         ui->label->clear();
         nextId();
+        ui->directoryLineEdit->setText(defaultUrl->path()+ui->iDLineEdit->text());  // Generate the Directory path for the Image Store
+        ui->priceLineEdit->setText("0");
     }
 
 }
@@ -168,6 +170,9 @@ void Inventory::on_pushButton_clicked()                         // INSERTing the
                 msg.setInformativeText("New Item Addition Successful");
                 msg.setIcon(QMessageBox::Information);
                 msg.exec();
+                QPixmap mp(ui->imageLineEdit->text());
+                ui->label->setPixmap(mp);
+                ui->label->setScaledContents(true);
             }
         }
     }else{
@@ -224,7 +229,7 @@ void Inventory::on_imageset_recieve(QVector<QPixmap> imgset){       //SLOT to Re
     imageSet = imgset;
     if(imageSet.size()>0){
         qDebug() << QString::number(imageSet.size()) + " images recieved";
-
+        ui->imageLineEdit->setText(ui->directoryLineEdit->text()+"/"+ QString::number(imageSet.size()/2) + ".jpg");
     }
 }
 

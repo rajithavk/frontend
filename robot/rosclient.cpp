@@ -83,6 +83,7 @@ void ROSClient::on_connected(){
 void ROSClient::on_disonnect()
 {
     qDebug() << "Websocket Disconnected";
+    connected = false;
     emit(conState("Disconnected"));
 
 }

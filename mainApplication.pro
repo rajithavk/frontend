@@ -31,7 +31,9 @@ SOURCES += main.cpp\
     robot/json.cpp \
     robot/rosclient.cpp \
     robot/crop.cpp \
-    welcome.cpp
+    welcome.cpp \
+    grid/display.cpp \
+    grid/item_details.cpp
 
 HEADERS  += bow.h \
     functions.hpp \
@@ -53,14 +55,18 @@ HEADERS  += bow.h \
     robot/json.h \
     robot/rosclient.h \
     robot/crop.h \
-    welcome.h
+    welcome.h \
+    grid/display.h \
+    grid/item_details.h
 
 FORMS    += bow.ui \
     inventory.ui \
     mainwindow.ui \
     qimagegrabber/dialogqimagegrabbersettings.ui \
     imagecapture.ui \
-    welcome.ui
+    welcome.ui \
+    grid/display.ui \
+    grid/item_details.ui
 
 CONFIG  += c++11
 

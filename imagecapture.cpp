@@ -18,6 +18,8 @@ ImageCapture::ImageCapture(QWidget *parent) :
     }
 
     setImageGrabber(mjpgGrabber);
+    connect(&robot,SIGNAL(conState(QString)),this,SLOT(connectionState(QString)));
+    imgCount = 1;
 }
 
 ImageCapture::~ImageCapture()
@@ -96,6 +98,14 @@ void ImageCapture::grabbingStateChanged(QImageGrabber::GrabbingState newState){
         ui->pushButtonStart->setText(tr("Start"));
 }
 
+void ImageCapture::connectionState(QString m)
+{
+    if(m == "Connected")
+        ui->btnConnect->setText("Disconnect");
+    else
+        ui->btnConnect->setText("Connect");
+}
+
 void ImageCapture::on_pushButtonStart_clicked()
 {
     if(currentGrabber!=NULL){
@@ -120,6 +130,8 @@ void ImageCapture::on_pushButton_clicked()
             QPixmap img = QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage());
             imageSet.append(img);
             ui->labelLastImage->setPixmap(img);
+            ui->labelLastImage->setScaledContents(true);
+            ui->pushButton->setText("Capture " + QString::number(imgCount++));
         }
     }
 }
@@ -154,35 +166,45 @@ void ImageCapture::on_btnStop_clicked()
     robot.publish("stop");
 }
 
-void ImageCapture::gotConState(QString state)
-{
-    if(state=="Connected")
-        ui->btnConnect->setText("Disconnect");
-    else
-        ui->btnConnect->setText("Connect");
-}
 
 void ImageCapture::on_pushButton_2_clicked()
 {
     robot.publish("run");
     connect(&robot, SIGNAL(snapIt()),this,SLOT(snapIt()));
     connect(&robot,SIGNAL(robotSaid(QString)),this,SLOT(fromRobot(QString)));
+    imgCount = 0;
 }
 
 void ImageCapture::snapIt()
 {
     //QPixmap snap(QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage()));
     vector<Mat> temp;
-    temp = convert(ui->graphicsViewImage->imageItem->getImage());
-    testImages.insert(testImages.end(),temp.begin(),temp.end());
-
+    try {
+        QPixmap t = QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage());
+        temp = convert(ui->graphicsViewImage->imageItem->getImage());
+        testImagesMap[imgCount++] = t;
+        ui->labelLastImage->setPixmap(t);
+        ui->labelLastImage->setScaledContents(true);
+    } catch (Exception e) {
+        qDebug() << e.code;
+    }
+    //testImages.insert(testImages.end(),temp.begin(),temp.end());
+    robot.publish("run");
+    qDebug() << "Asked to Run";
 }
 
 void ImageCapture::fromRobot(QString m)
 {
     QMessageBox msg;
-    msg.setWindowTitle("Finished");
-    msg.setText("Autorun Finished");
-    msg.setIcon(QMessageBox::Information);
-    msg.exec();
+    if(m == "md"){
+        msg.setWindowTitle("Finished");
+        msg.setText("Autorun Finished");
+        msg.setIcon(QMessageBox::Information);
+        msg.exec();
+    if(testImagesMap.size() > 0){
+        display *temp = new display(0,&testImagesMap);
+        temp->show();
+    }
+
+    }
 }

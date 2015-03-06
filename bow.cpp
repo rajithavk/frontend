@@ -138,9 +138,14 @@ void BOW::on_comboBox_activated(const QString &arg1)
 
 void BOW::on_pushButton_6_clicked()
 {
-    QUrl filename = QFileDialog::getOpenFileUrl(this,"Select an Image",QDir::currentPath(),tr("Images (*.jpg)"));
-    Mat im = imread(filename.path().toStdString(),0);
-    bow->testImage(im);
-    cv::resize(im,im,Size(im.cols/2,im.rows/2));
-    imshow("im",im);
+    try {
+        QUrl filename = QFileDialog::getOpenFileUrl(this,"Select an Image",QDir::currentPath(),tr("Images (*.*)"));
+        Mat im = imread(filename.path().toStdString(),0);
+        bow->testImage(im);
+        cv::resize(im,im,Size(im.cols/2,im.rows/2));
+        imshow("im",im);
+    } catch (Exception e) {
+        qDebug() << QString::fromStdString(e.err);
+    }
+
 }

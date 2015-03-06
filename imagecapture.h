@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <opencv2/core/core.hpp>
 #include "robot/crop.h"
+#include "grid/display.h"
 
 using namespace cv;
 using namespace std;
@@ -43,8 +44,8 @@ private:
     QVector<QPixmap> imageSet;
     void setImageGrabber(QImageGrabber *gb);
     ROSClient robot;
-
-    vector<Mat> testImages;
+    map<int,QPixmap> testImagesMap;
+    int imgCount;
 
 signals:
     void gotImageSet(QVector<QPixmap>);
@@ -56,6 +57,7 @@ private slots:
     void newImageReceived(QImage *);
     void newFPSCalculated(double,double);
     void grabbingStateChanged(QImageGrabber::GrabbingState newState);
+    void connectionState(QString m);
 
     void on_pushButtonStart_clicked();
     void on_pushButtonSettings_clicked();
@@ -67,7 +69,6 @@ private slots:
     void on_btnBack_clicked();
     void on_btnStop_clicked();
 
-    void gotConState(QString state);
     void on_pushButton_2_clicked();
 
     void snapIt();
