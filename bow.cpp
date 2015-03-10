@@ -147,5 +147,26 @@ void BOW::on_pushButton_6_clicked()
     } catch (Exception e) {
         qDebug() << QString::fromStdString(e.err);
     }
+}
+
+void BOW::on_btnTestFolder_clicked()
+{
+    qDebug() << "Triggered";
+   // try {
+        QUrl url = QFileDialog::getExistingDirectoryUrl(this,"Select Directory",QDir::currentPath(),QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
+        QDir dir(url.path());
+        dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
+        QStringList dirList = dir.entryList();
+        //qDebug() << dirList.count();
+        foreach (QString i ,dirList) {
+            qDebug() << i;
+        }
+
+        if(!dirList.count()>0)  return;
+
+
+  //  } catch (Exception e) {
+  //  }
+
 
 }

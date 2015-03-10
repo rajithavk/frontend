@@ -179,8 +179,14 @@ void ImageCapture::snapIt()
 {
     //QPixmap snap(QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage()));
     vector<Mat> temp;
+    QThread::sleep(1);
     try {
         QPixmap t = QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage());
+
+        //QString path = QDir::currentPath() + "/BOW/RecentSet/" + QString::number(imgCount) + ".jpg";
+
+        QString path = QDir::currentPath() + "/BOW/RecentSet/" + time.currentDateTime().toString("dd")+ QString::number(imgCount) + ".jpg";
+        t.save(path,"JPG");
         temp = convert(ui->graphicsViewImage->imageItem->getImage());
         testImagesMap[imgCount++] = t;
         ui->labelLastImage->setPixmap(t);
@@ -189,6 +195,7 @@ void ImageCapture::snapIt()
         qDebug() << e.code;
     }
     //testImages.insert(testImages.end(),temp.begin(),temp.end());
+    QThread::sleep(1);
     robot.publish("run");
     qDebug() << "Asked to Run";
 }
@@ -201,6 +208,7 @@ void ImageCapture::fromRobot(QString m)
         msg.setText("Autorun Finished");
         msg.setIcon(QMessageBox::Information);
         msg.exec();
+
     if(testImagesMap.size() > 0){
         display *temp = new display(0,&testImagesMap);
         temp->show();

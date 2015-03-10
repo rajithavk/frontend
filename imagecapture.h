@@ -5,8 +5,9 @@
 #include <QSettings>
 #include <QCloseEvent>
 #include <QMessageBox>
-
-
+#include <QDir>
+#include <QThread>
+#include <QDateTime>
 #include "qimagegrabber/qimagegrabber.h"
 #include "qimagegrabber/qimagegrabberhttp.h"
 #include "qimagegrabber/qimagegrabbermjpeg.h"
@@ -46,6 +47,7 @@ private:
     ROSClient robot;
     map<int,QPixmap> testImagesMap;
     int imgCount;
+    QDateTime time;
 
 signals:
     void gotImageSet(QVector<QPixmap>);

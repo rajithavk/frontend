@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <iostream>
 #include <imagelistmodel.h>
+#include <QDebug>
 using namespace std;
 
 namespace Ui {
@@ -33,8 +34,11 @@ private slots:
 
     void on_pushButton_6_clicked();
 
+    void on_btnTestFolder_clicked();
+
 private:
     Ui::BOW *ui;
+
 };
 
 #endif // BOW_H
