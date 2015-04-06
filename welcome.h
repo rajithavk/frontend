@@ -5,6 +5,7 @@
 #include "bow.h"
 #include "inventory.h"
 #include "imagecapture.h"
+#include "grid/display.h"
 
 namespace Ui {
 class welcome;
@@ -27,11 +28,14 @@ private slots:
 
     void on_btnRun_clicked();
 
+    void on_btnGrid_clicked();
+
 private:
     Ui::welcome *ui;
     BOW *bow;
     ImageCapture *imgcap;
     Inventory *invt;
+    display *d;
 
 };
 

@@ -1,12 +1,22 @@
-#include "bow.h"
-#include "inventory.h"
+//#include "bow.h"
+//#include "inventory.h"
 #include "mainwindow.h"
-#include "imagecapture.h"
+//#include "imagecapture.h"
 #include <QApplication>
+#include <QPixmap>
+#include <QLabel>
+#include <cstdio>
+#include <map>
+#include <QWidget>
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
 #include "welcome.h"
+
+
+
+
+
 
 
 void loadStyleSheet(){
@@ -28,6 +38,12 @@ int main(int argc, char *argv[])
     //MainWindow w;
     //Inventory w(1,0);
     //ImageCapture w(0);
+
+
+
+
+
+
     welcome w;
 
     loadStyleSheet();

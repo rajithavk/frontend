@@ -2,11 +2,13 @@
 #define DISPLAY_H
 
 #include "item_details.h"
+#include "qrightclickpushbutton.h"
 
 #include <QMainWindow>
 #include <map>
 #include <QSqlDatabase>
 #include <QSignalMapper>
+#include <QMenu>
 
 using namespace std;
 namespace Ui {
@@ -27,7 +29,8 @@ private slots:
 private:
     Ui::display *ui;
     QSqlDatabase dbc;
-    QSignalMapper *signalMapper;
+    QSignalMapper *signalMapper_click;
+    QSignalMapper *signalMapper_rightclick;
     map <int, QPixmap> *pics;
     item_details *details;
 

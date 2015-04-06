@@ -185,7 +185,7 @@ void ImageCapture::snapIt()
 
         //QString path = QDir::currentPath() + "/BOW/RecentSet/" + QString::number(imgCount) + ".jpg";
 
-        QString path = QDir::currentPath() + "/BOW/RecentSet/" + time.currentDateTime().toString("dd")+ QString::number(imgCount) + ".jpg";
+        QString path = QDir::currentPath() + "/BOW/RecentSet/" + time.currentDateTime().toString(Qt::ISODate) + ".jpg";
         t.save(path,"JPG");
         temp = convert(ui->graphicsViewImage->imageItem->getImage());
         testImagesMap[imgCount++] = t;

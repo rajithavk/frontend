@@ -29,11 +29,13 @@
 #include <stdlib.h>
 #include <string>
 
-#include <omp.h>
 
 using namespace std;
 using namespace cv;
 using namespace boost::filesystem;
+
+
+
 
 class vision{
 
@@ -64,6 +66,8 @@ private :
         const String TRAINING_SET_INFO = "BOW/trainingsetinfo.yml";
         const int CLUSTERS = 1000;
 
+
+
 public:
 		int loadTrainingSet();										// Load training images set into memory
 		int initVocabulary();										// Load default vocabulary from file
@@ -76,7 +80,8 @@ public:
 		int trainSVM();												// train the SVMs
 		int testImage(Mat testimage);											// testing an input image against SVMs
 		int initClassifiers();										// load SVMs
-		int testImages();
+        vector<pair<string,float>> testImage(string filename);
+
         void clearTrainingSet();
 		void openCamera(VideoCapture cap);
         multimap<string,Mat> getTrainingSet();

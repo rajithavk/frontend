@@ -21,10 +21,12 @@ BOW::BOW(QWidget *parent) :
 
 }
 
+
 BOW::~BOW()
 {
     delete ui;
 }
+
 
 void BOW::on_pushButton_clicked()
 {   ui->pushButton_2->setEnabled(false);
@@ -151,22 +153,61 @@ void BOW::on_pushButton_6_clicked()
 
 void BOW::on_btnTestFolder_clicked()
 {
-    qDebug() << "Triggered";
-   // try {
+   QMultiMap<QString,vector<pair<string,float>>> results;
+   try {
         QUrl url = QFileDialog::getExistingDirectoryUrl(this,"Select Directory",QDir::currentPath(),QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
         QDir dir(url.path());
         dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
         QStringList dirList = dir.entryList();
         //qDebug() << dirList.count();
-        foreach (QString i ,dirList) {
-            qDebug() << i;
-        }
+
 
         if(!dirList.count()>0)  return;
+        QDir ims;
+        QStringList imList;
+        ims.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+
+        foreach (QString i ,dirList) {
+            qDebug() << i;
+            ims.setPath(dir.path()+"/"+i);
+            ims.setNameFilters(QStringList() << "*.jpg" << "*.JPG");
+            imList = ims.entryList();
+            foreach (QString a, imList) {
+                // qDebug() << ims.path()+"/"+a;
+                QString impath = ims.path() +"/" + a;
+                qDebug() << impath;
+                try {
+                    results.insert(i,bow->testImage(impath.toStdString()));
+                    qDebug() << "Result Added";
+
+                } catch (exception e) {
+                    qDebug() << e.what();
+                }
+            }
+        }
+
+        saveXMLFile("betaresults",results);
+  } catch (Exception e) {
+        qDebug() << QString::fromStdString(e.err);
+  }
 
 
-  //  } catch (Exception e) {
-  //  }
+}
 
+void BOW::saveXMLFile(QString fileName, QMultiMap<QString, vector<pair<string, float> > > &results)
+{
+ QFile file(QDir::currentPath() + "/BOW/" + fileName +".xml");
+
+ QXmlStreamWriter xmlWriter(&file);
+ qDebug() << "File opened";
+
+ xmlWriter.setAutoFormatting(true);
+ xmlWriter.writeStartDocument();
+ xmlWriter.writeStartElement("Results");
+ for(QMultiMap<QString,vector<pair<string,float > > >::iterator it = results.begin();it!=results.end();it++){
+     xmlWriter.writeStartElement(it.key());
+     xmlWriter.writeEndElement();
+ }
+ xmlWriter.writeEndElement();
 
 }

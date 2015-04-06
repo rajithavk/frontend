@@ -269,7 +269,6 @@ int vision::initVocabulary(String filename){
 }
 
 
-
 //=================================================================================================
 // 								Load Training Image Set
 //=================================================================================================
@@ -311,7 +310,6 @@ void vision::clearTrainingSet(){
     num_of_classes = 0;
     num_of_samples = 0;
 }
-
 
 
 void vision::openCamera(VideoCapture cap){	// index - video device - 0,1,2... == video0, video1
@@ -362,7 +360,6 @@ void vision::openCamera(VideoCapture cap){	// index - video device - 0,1,2... ==
 }
 
 
-
 //=================================================================================================
 // 								Load Prebuilt SVMs
 //=================================================================================================
@@ -379,16 +376,51 @@ int vision::initClassifiers(){
 		classes_classifiers[class_].load(path(*file).string().c_str());
 	}
 
-	return 0;
-}
-
-int vision::testImages(){
     return 0;
-
 }
+
+vector<pair<string,float>> vision::testImage(string filename)
+{
+    vector<pair<string,float>> lastResult;
+    try {
+        Mat testimage = imread(filename,CV_LOAD_IMAGE_GRAYSCALE);
+        vector< pair<string,float> > reslist;
+        Mat hist;
+        if(initVocabulary()!=0) return lastResult;
+        bowDescriptorExtractor->setVocabulary(vocabulary);
+
+        //	testimage = imread("test.jpg",CV_LOAD_IMAGE_GRAYSCALE);
+        vector<KeyPoint> keypoints;
+        keypoints = getKeyPoints(testimage);
+        bowDescriptorExtractor->compute(testimage,keypoints,hist);
+        //cout << hist.cols << endl;
+
+        for(map<string,CvSVM>::iterator it=classes_classifiers.begin();it!=classes_classifiers.end();++it){
+            float res = (*it).second.predict(hist,true);
+            //cout << "class: " << (*it).first << " --> " << res << endl;
+            reslist.push_back(pair<string,float>((*it).first,res));
+        }
+
+        for(int i=0;i<3;i++){
+            vector<pair<string,float>>::iterator min_index = reslist.begin();
+            for(vector<pair<string,float>>::iterator it = reslist.begin();it!=reslist.end();it++){
+                if((*it).second<=(*min_index).second)
+                    min_index = it;
+            }
+            lastResult.push_back((*min_index));
+            // cout << (*min_index).first << ":" << (*min_index).second << endl;
+            reslist.erase(min_index);
+        }
+    } catch (exception e) {
+        cout << e.what();
+    }
+    return lastResult;
+}
+
 
 
 multimap<string,Mat> vision::getTrainingSet(){
     if(training_set.size()>0)
         return training_set;
+    return multimap<string,Mat>();
 }

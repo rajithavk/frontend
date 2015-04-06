@@ -5,6 +5,7 @@
 #include <iostream>
 #include <imagelistmodel.h>
 #include <QDebug>
+#include <QXmlStreamWriter>
 using namespace std;
 
 namespace Ui {
@@ -35,6 +36,8 @@ private slots:
     void on_pushButton_6_clicked();
 
     void on_btnTestFolder_clicked();
+
+    void saveXMLFile(QString fileName,QMultiMap<QString,vector<pair<string,float>>> & results);
 
 private:
     Ui::BOW *ui;

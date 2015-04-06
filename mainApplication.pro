@@ -33,7 +33,9 @@ SOURCES += main.cpp\
     robot/crop.cpp \
     welcome.cpp \
     grid/display.cpp \
-    grid/item_details.cpp
+    grid/item_details.cpp \
+    grid/items_details.cpp \
+    grid/qrightclickpushbutton.cpp
 
 HEADERS  += bow.h \
     functions.hpp \
@@ -57,7 +59,9 @@ HEADERS  += bow.h \
     robot/crop.h \
     welcome.h \
     grid/display.h \
-    grid/item_details.h
+    grid/item_details.h \
+    grid/items_details.h \
+    grid/qrightclickpushbutton.h
 
 FORMS    += bow.ui \
     inventory.ui \
@@ -66,7 +70,8 @@ FORMS    += bow.ui \
     imagecapture.ui \
     welcome.ui \
     grid/display.ui \
-    grid/item_details.ui
+    grid/item_details.ui \
+    grid/items_details.ui
 
 CONFIG  += c++11
 

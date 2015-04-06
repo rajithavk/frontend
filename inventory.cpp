@@ -151,8 +151,10 @@ void Inventory::on_pushButton_clicked()                         // INSERTing the
         qry->bindValue(":directory",ui->directoryLineEdit->text());
         qry->bindValue(":image",ui->imageLineEdit->text());
 
-        if(!qry->exec())
+        if(!qry->exec()){
             qDebug()<<qry->lastError();
+            qry->finish();
+        }
         else{
             qDebug("Record Added");
             if(editingMode){
@@ -167,7 +169,7 @@ void Inventory::on_pushButton_clicked()                         // INSERTing the
                 QMessageBox msg;
                 msg.setWindowTitle("Add");
                 msg.setText("Item Added");
-                msg.setInformativeText("New Item Addition Successful");
+                msg.setInformativeText("New Item Addition successful");
                 msg.setIcon(QMessageBox::Information);
                 msg.exec();
                 QPixmap mp(ui->imageLineEdit->text());
@@ -175,6 +177,7 @@ void Inventory::on_pushButton_clicked()                         // INSERTing the
                 ui->label->setScaledContents(true);
             }
         }
+        qry->finish();
     }else{
         QMessageBox msg;
         msg.setText("A Field Cannot be empty");
@@ -254,7 +257,7 @@ int Inventory::saveImageSet(){                                      // Save the 
                 msg.setInformativeText("New Item Addition Successful");
                 msg.setIcon(QMessageBox::Critical);
                 msg.exec();
-                return 0;
+                return 1;
             }
             int count = 0;
             foreach (QPixmap i, imageSet) {

@@ -2,6 +2,7 @@
 #include "ui_display.h"
 //#include "additems.h"
 #include "item_details.h"
+#include "qrightclickpushbutton.h"
 
 #include <map>
 #include <QSqlDatabase>
@@ -9,9 +10,9 @@
 #include <QSqlQuery>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QDebug>
+#include <iostream>
 
-#define Path_to_DB "dbinventory.db"
+#define Path_to_DB "test.db"
 
 using namespace std;
 
@@ -29,9 +30,8 @@ display::display(QWidget *parent, map<int, QPixmap> *pics):
 
     int pic_cnt=0;
     this->pics = pics;
-    qDebug() << pics->size();
-
     if(this->pics==0){//default state, at the start
+        cout<<"working"<<endl;
         map<int, QPixmap> pics_temp;
         QSqlDatabase dbc = QSqlDatabase::addDatabase("QSQLITE");
         dbc.setDatabaseName(Path_to_DB);
@@ -61,38 +61,47 @@ display::display(QWidget *parent, map<int, QPixmap> *pics):
 
         }
         this->pics = &pics_temp;
-    }
+    }// if for default pics
 
-    signalMapper = new QSignalMapper(this);
+    signalMapper_click = new QSignalMapper(this);
+    signalMapper_rightclick = new QSignalMapper(this);
 //    puts(pics-> size());
     int disp_pic_cnt = 0;
+    pic_cnt = pics->size(); // what ever method used to load the pic_cnt this should be needed to get pic count
     for(int row=0; row<=pic_cnt/5; row++){
         int col_limit = pic_cnt-row*5>=5 ? 5 : pic_cnt-row*5;
         for(int col=0; col< col_limit ; col++){
             disp_pic_cnt++;
-            QPushButton *a = new QPushButton("test");
+            QRightClickPushButton *a = new QRightClickPushButton(this);
             a->setFixedSize(200,200);
-
-//            QPixmap pixmap("/home/nalin/test1/untitled/1.jpg");
-              QPixmap pixmap = pics->at(1);
+//            QPixmap pixmap("/home/nalin/test1/untitled/2.jpg");
 //            QPixmap pixmap(juwelaries.at(row*5+col).value(2).toString());
-//            QPixmap pic = pics->at(1);
-            QIcon ButtonIcon(pixmap);
+            QPixmap pic = pics->at(row*5+col+1);
+//            QIcon ButtonIcon(pixmap);
+            QIcon ButtonIcon(pic);
             a->setIcon(ButtonIcon);
-            a->setIconSize(a->size());
+            a->setIconSize(pic.rect().size());
+
+            QMenu *menu = new QMenu(this);
+            menu->addAction("Edit");
+            menu->addAction("Delete");
+            menu->addAction("Replace");
+            a->setMenu(menu);
 
             ui->gridLayout->addWidget(a,row+1,col+1);
-////            QObject::connect(a,SIGNAL(clicked(row, col)),this,SLOT(butgrid(row, col)));
-            connect(a, SIGNAL(clicked()), signalMapper, SLOT(map()));
-            signalMapper->setMapping(a, QString::number(row*5+col+1));
+            connect(a, SIGNAL(clicked()), signalMapper_click, SLOT(map())); // connect signal with signal mapper
+            signalMapper_click->setMapping(a, QString::number(row*5+col+1));// mapping parameters
+            connect(a, SIGNAL(rightClicked()), signalMapper_rightclick, SLOT(map()));
+            signalMapper_rightclick->setMapping(a, QString::number(row*5+col+1));
+
 //            butgrid.append(a);// add buttons to qvector
         }
 
     }
-    ui->gridLayout->setSpacing(20);
-    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(butgrid(const QString &)));
 
-
+    ui->gridLayout_2->setSpacing(50);
+    connect(signalMapper_click, SIGNAL(mapped(const QString &)), this, SLOT(butgrid(const QString &)));// map with final function
+    connect(signalMapper_rightclick, SIGNAL(mapped(const QString &)), this, SLOT(butgrid(const QString &)));
 }
 
 display::~display(){
