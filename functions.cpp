@@ -406,9 +406,10 @@ vector<pair<string,float>> vision::testImage(string filename)
             for(vector<pair<string,float>>::iterator it = reslist.begin();it!=reslist.end();it++){
                 if((*it).second<=(*min_index).second)
                     min_index = it;
+            vector<pair<string,float>>::iterator min_index = reslist.begin();
             }
             lastResult.push_back((*min_index));
-            // cout << (*min_index).first << ":" << (*min_index).second << endl;
+            cout << (*min_index).first << ":" << (*min_index).second << endl;
             reslist.erase(min_index);
         }
     } catch (exception e) {

@@ -160,7 +160,7 @@ void BOW::on_btnTestFolder_clicked()
         dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
         QStringList dirList = dir.entryList();
         //qDebug() << dirList.count();
-
+        int d = 0;
 
         if(!dirList.count()>0)  return;
         QDir ims;
@@ -182,6 +182,7 @@ void BOW::on_btnTestFolder_clicked()
 
                 } catch (exception e) {
                     qDebug() << e.what();
+                    qDebug() << "Error Here";
                 }
             }
         }
@@ -197,17 +198,41 @@ void BOW::on_btnTestFolder_clicked()
 void BOW::saveXMLFile(QString fileName, QMultiMap<QString, vector<pair<string, float> > > &results)
 {
  QFile file(QDir::currentPath() + "/BOW/" + fileName +".xml");
+ if(!file.open(QIODevice::WriteOnly)) return;
 
  QXmlStreamWriter xmlWriter(&file);
+
  qDebug() << "File opened";
 
  xmlWriter.setAutoFormatting(true);
  xmlWriter.writeStartDocument();
  xmlWriter.writeStartElement("Results");
+ try{
  for(QMultiMap<QString,vector<pair<string,float > > >::iterator it = results.begin();it!=results.end();it++){
-     xmlWriter.writeStartElement(it.key());
-     xmlWriter.writeEndElement();
+     vector<pair<string,float>>::iterator itv = it.value().begin();
+   // if((it) == NULL) continue;
+
+         xmlWriter.writeStartElement("Item");
+         xmlWriter.writeAttribute("Original",it.key());
+             xmlWriter.writeStartElement("R1");
+                xmlWriter.writeAttribute("id",QString::fromStdString((*itv).first));
+                xmlWriter.writeAttribute("score",QString::number(((*itv).second)));
+             xmlWriter.writeEndElement();
+             xmlWriter.writeStartElement("R2");
+                 xmlWriter.writeAttribute("id",QString::fromStdString((*(itv+1)).first));
+                 xmlWriter.writeAttribute("score",QString::number(((*(itv+1)).second)));
+             xmlWriter.writeEndElement();
+             xmlWriter.writeStartElement("R3");
+                 xmlWriter.writeAttribute("id",QString::fromStdString((*(itv+2)).first));
+                 xmlWriter.writeAttribute("score",QString::number(((*(itv+2)).second)));
+             xmlWriter.writeEndElement();
+
+         xmlWriter.writeEndElement();
  }
  xmlWriter.writeEndElement();
 
+ } catch (Exception e) {
+     qDebug() << QString::fromStdString(e.err);
+ }
+ file.close();
 }

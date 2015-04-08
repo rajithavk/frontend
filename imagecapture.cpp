@@ -108,7 +108,7 @@ void ImageCapture::connectionState(QString m)
 
 void ImageCapture::on_pushButtonStart_clicked()
 {
-    if(currentGrabber!=NULL){
+        if(currentGrabber!=NULL){
         if(currentGrabber->isGrabbing()){
             currentGrabber->stopGrabbing();
         }else{
