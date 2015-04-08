@@ -11,15 +11,18 @@ ImageCapture::ImageCapture(QWidget *parent) :
     imageGrabbers.append(mjpgGrabber);
     settings.beginGroup("mjpgGrabber");
     mjpgGrabber->setSource(settings.value("url").toString());
+    URL = settings.value("url").toString();
     settings.endGroup();
 
     foreach(QImageGrabber *currentGrabber,imageGrabbers){
         ui->comboBoxGrabberTypes->addItem(currentGrabber->grabberName());
     }
+    ui->comboBoxGrabberTypes->addItem("OpenCV Grabber");
 
     setImageGrabber(mjpgGrabber);
     connect(&robot,SIGNAL(conState(QString)),this,SLOT(connectionState(QString)));
     imgCount = 1;
+    cvGrabber = false;
 }
 
 ImageCapture::~ImageCapture()
@@ -33,6 +36,8 @@ ImageCapture::~ImageCapture()
 
 void ImageCapture::closeEvent(QCloseEvent *event){
     Q_UNUSED(event)
+
+    vcap.release();
     if(imageSet.size()>0){
         emit gotImageSet(imageSet);
         qDebug() << "imageset emmited";
@@ -46,9 +51,21 @@ void ImageCapture::closeEvent(QCloseEvent *event){
 
 void ImageCapture::on_comboBoxGrabberTypes_activated(int index)
 {
-    setImageGrabber(imageGrabbers.at(index));
+    if(index==0){
+     setImageGrabber(imageGrabbers.at(index));
+     cvGrabber = false;
+    }
+    else{
+            qDebug() << "OpenCV Grabber Selected";
+            connect(this,SIGNAL(newOpencvGrabbedImage(QImage*)),this,SLOT(newImageReceived(QImage*)));
+            if(vcap.open(URL.toStdString())){
+                cvIsGrabbing = false;
+                cvGrabber = true;
+                qDebug() << "Connected to Stream";
+            }
+            else    qDebug() << "Cannot Open the URL for OpenCV grabber";
+    }
 }
-
 
 void ImageCapture::setImageGrabber(QImageGrabber *gb){
     disconnect(this,SLOT(newImageReceived(QImage*)));
@@ -74,6 +91,17 @@ void ImageCapture::setImageGrabber(QImageGrabber *gb){
     if(ui->comboBoxGrabberTypes->currentIndex() !=i)
         ui->comboBoxGrabberTypes->setCurrentIndex(i);
 
+}
+
+void ImageCapture::opencvGrabImage()
+{
+    qDebug() << "Here we go";
+    while(cvIsGrabbing){
+        if(vcap.read(image)){
+            cvImage = new QImage(cvMatToQImage(image));
+            emit newOpencvGrabbedImage(cvImage);
+        }
+    }
 }
 
 void ImageCapture::newImageReceived(QImage *img){
@@ -108,6 +136,19 @@ void ImageCapture::connectionState(QString m)
 
 void ImageCapture::on_pushButtonStart_clicked()
 {
+    if(cvGrabber){
+        qDebug() << "Going Concurrent";
+        if(cvIsGrabbing){
+            cvIsGrabbing = false;
+            ui->pushButtonStart->setText("Start");
+        }
+        else{
+            cvIsGrabbing = true;
+            ui->pushButtonStart->setText("Stop");
+        }
+        QFuture<void> future = QtConcurrent::run(this,&ImageCapture::opencvGrabImage);
+    }
+    else{
         if(currentGrabber!=NULL){
         if(currentGrabber->isGrabbing()){
             currentGrabber->stopGrabbing();
@@ -115,6 +156,7 @@ void ImageCapture::on_pushButtonStart_clicked()
             currentGrabber->startGrabbing();
             ui->graphicsViewImage->grabbingStarted();
         }
+    }
     }
 }
 

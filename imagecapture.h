@@ -17,6 +17,10 @@
 #include <opencv2/core/core.hpp>
 #include "robot/crop.h"
 #include "grid/display.h"
+#include <opencv2/opencv.hpp>
+#include "CONV.h"
+#include <QFuture>
+#include <QtConcurrent/QtConcurrent>
 
 using namespace cv;
 using namespace std;
@@ -29,10 +33,12 @@ class ImageCapture : public QWidget
 {
     Q_OBJECT
 
+
 public:
     explicit ImageCapture(QWidget *parent = 0);
     ~ImageCapture();
      void closeEvent(QCloseEvent *);
+
 
 private:
     Ui::ImageCapture *ui;
@@ -49,8 +55,17 @@ private:
     int imgCount;
     QDateTime time;
 
+    cv::VideoCapture vcap;
+    cv::Mat image;
+    bool cvGrabber;
+    bool cvIsGrabbing;
+    void opencvGrabImage();
+    QString URL;
+    QImage *cvImage;
+
 signals:
     void gotImageSet(QVector<QPixmap>);
+    void newOpencvGrabbedImage(QImage *);
 
 private slots:
 

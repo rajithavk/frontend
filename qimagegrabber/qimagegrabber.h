@@ -82,12 +82,14 @@ public:
     void saveSettings(QSettings *settings);
     void loadSettings(QSettings *settings);
 
+    QString source;
+
 protected:
     QString m_errorStr;
     QBuffer *imageBuffer;
     QImageReader *imageReader;
     QImage *currentImage;
-    QString source;
+
     GrabbingState currentState;
 
     void setError(QString str);
