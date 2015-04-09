@@ -35,7 +35,7 @@ class ImageCapture : public QWidget
 
 
 public:
-    explicit ImageCapture(QWidget *parent = 0);
+    explicit ImageCapture(QWidget *parent = 0, cv::VideoCapture *c = NULL);
     ~ImageCapture();
      void closeEvent(QCloseEvent *);
 

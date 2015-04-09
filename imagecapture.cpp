@@ -1,7 +1,7 @@
 #include "imagecapture.h"
 #include "ui_imagecapture.h"
 
-ImageCapture::ImageCapture(QWidget *parent) :
+ImageCapture::ImageCapture(QWidget *parent,cv::VideoCapture *c) :
     QWidget(parent),
     ui(new Ui::ImageCapture),
     currentGrabber(NULL)
@@ -13,6 +13,8 @@ ImageCapture::ImageCapture(QWidget *parent) :
     mjpgGrabber->setSource(settings.value("url").toString());
     URL = settings.value("url").toString();
     settings.endGroup();
+
+    vcap = *c;
 
     foreach(QImageGrabber *currentGrabber,imageGrabbers){
         ui->comboBoxGrabberTypes->addItem(currentGrabber->grabberName());
@@ -27,6 +29,7 @@ ImageCapture::ImageCapture(QWidget *parent) :
 
 ImageCapture::~ImageCapture()
 {
+    cvIsGrabbing = false;
     settings.beginGroup("mjpgGrabber");
     settings.setValue("url",mjpgGrabber->currentSource());
     settings.endGroup();
@@ -37,6 +40,7 @@ ImageCapture::~ImageCapture()
 void ImageCapture::closeEvent(QCloseEvent *event){
     Q_UNUSED(event)
 
+    cvIsGrabbing = false;
     vcap.release();
     if(imageSet.size()>0){
         emit gotImageSet(imageSet);
@@ -58,7 +62,8 @@ void ImageCapture::on_comboBoxGrabberTypes_activated(int index)
     else{
             qDebug() << "OpenCV Grabber Selected";
             connect(this,SIGNAL(newOpencvGrabbedImage(QImage*)),this,SLOT(newImageReceived(QImage*)));
-            if(vcap.open(URL.toStdString())){
+            //if(vcap.open(URL.toStdString())){
+            if(vcap.isOpened()){
                 cvIsGrabbing = false;
                 cvGrabber = true;
                 qDebug() << "Connected to Stream";
@@ -167,6 +172,13 @@ void ImageCapture::on_pushButtonSettings_clicked(){
 
 void ImageCapture::on_pushButton_clicked()
 {
+    if(cvGrabber){
+        QPixmap img = QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage());
+        imageSet.append(img);
+        ui->labelLastImage->setPixmap(img);
+        ui->labelLastImage->setScaledContents(true);
+        ui->pushButton->setText("Capture " + QString::number(imgCount++));
+    }else{
     if(currentGrabber!=NULL){
         if(currentGrabber->isGrabbing()){
             QPixmap img = QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage());
@@ -175,6 +187,7 @@ void ImageCapture::on_pushButton_clicked()
             ui->labelLastImage->setScaledContents(true);
             ui->pushButton->setText("Capture " + QString::number(imgCount++));
         }
+    }
     }
 }
 

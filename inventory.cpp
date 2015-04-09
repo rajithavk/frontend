@@ -11,6 +11,14 @@ Inventory::Inventory(int id,QWidget *parent) :
     connect(this,SIGNAL(exit()),this,SLOT(close()));
     editingMode=(id==0)?false:true;
 
+    QSettings settings;
+    settings.beginGroup("mjpgGrabber");
+    QString URL = settings.value("url").toString();
+    settings.endGroup();
+    capture = new cv::VideoCapture(URL.toLocal8Bit().data());
+    if(capture->isOpened()) qDebug() << "Stream Pre-Opened";
+    capture->grab();
+
     defaultUrl = new QUrl(QDir::currentPath()+"/BOW/images/");  //Default Location to Create Sample Images Directories
     db = QSqlDatabase::addDatabase("QSQLITE");                  //Creating SQLite Database
     db.setDatabaseName("dbinventory.db");
@@ -71,6 +79,7 @@ Inventory::Inventory(int id,QWidget *parent) :
 
 Inventory::~Inventory()
 {
+    capture->release();
     delete ui;
     delete qry;
 }
@@ -238,7 +247,7 @@ void Inventory::on_imageset_recieve(QVector<QPixmap> imgset){       //SLOT to Re
 
 void Inventory::on_pushButton_4_clicked()                           // Open the Image Capture Window
 {
-    newCapture = new ImageCapture();
+    newCapture = new ImageCapture(0,capture);
     newCapture->show();
     connect(newCapture,SIGNAL(gotImageSet(QVector<QPixmap>)),this,SLOT(on_imageset_recieve(QVector<QPixmap>)));
 }
