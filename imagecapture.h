@@ -21,6 +21,7 @@
 #include "CONV.h"
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
+#include "global_objects.h"
 
 using namespace cv;
 using namespace std;
@@ -35,7 +36,8 @@ class ImageCapture : public QWidget
 
 
 public:
-    explicit ImageCapture(QWidget *parent = 0, cv::VideoCapture *c = NULL);
+    //explicit ImageCapture(QWidget *parent = 0, cv::VideoCapture *c = NULL);
+    explicit ImageCapture(QWidget *parent = 0);
     ~ImageCapture();
      void closeEvent(QCloseEvent *);
 

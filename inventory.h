@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include "imagecapture.h"
 #include <opencv2/opencv.hpp>
+#include <global_objects.h>
 
 namespace Ui {
 class inventory;
@@ -47,7 +48,7 @@ private:
     QUrl *defaultUrl;
     bool editingMode;
     int saveImageSet();
-    cv::VideoCapture *capture;
+    //cv::VideoCapture *capture;
 
 signals :
     void exit();

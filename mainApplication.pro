@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     grid/display.cpp \
     grid/item_details.cpp \
     grid/items_details.cpp \
-    grid/qrightclickpushbutton.cpp
+    grid/qrightclickpushbutton.cpp \
+    global_objects.cpp
 
 HEADERS  += bow.h \
     functions.hpp \
@@ -61,7 +62,8 @@ HEADERS  += bow.h \
     grid/display.h \
     grid/item_details.h \
     grid/items_details.h \
-    grid/qrightclickpushbutton.h
+    grid/qrightclickpushbutton.h \
+    global_objects.h
 
 FORMS    += bow.ui \
     inventory.ui \

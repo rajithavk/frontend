@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>810</width>
-    <height>698</height>
+    <height>760</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -99,10 +99,10 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="labelLastImage">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>30</x>
      <y>500</y>
-     <width>211</width>
-     <height>191</height>
+     <width>200</width>
+     <height>250</height>
     </rect>
    </property>
    <property name="text">

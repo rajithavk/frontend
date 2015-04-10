@@ -6,6 +6,7 @@
 #include "inventory.h"
 #include "imagecapture.h"
 #include "grid/display.h"
+#include <global_objects.h>
 
 namespace Ui {
 class welcome;
@@ -30,12 +31,17 @@ private slots:
 
     void on_btnGrid_clicked();
 
+    void getRecordsForGrid(const QString &fileName);
+
+    void on_btnStream_clicked();
+
 private:
     Ui::welcome *ui;
     BOW *bow;
     ImageCapture *imgcap;
     Inventory *invt;
     display *d;
+    map<int,QPixmap> *mp;
 
 };
 

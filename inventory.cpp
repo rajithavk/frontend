@@ -11,13 +11,7 @@ Inventory::Inventory(int id,QWidget *parent) :
     connect(this,SIGNAL(exit()),this,SLOT(close()));
     editingMode=(id==0)?false:true;
 
-    QSettings settings;
-    settings.beginGroup("mjpgGrabber");
-    QString URL = settings.value("url").toString();
-    settings.endGroup();
-    capture = new cv::VideoCapture(URL.toLocal8Bit().data());
-    if(capture->isOpened()) qDebug() << "Stream Pre-Opened";
-    capture->grab();
+
 
     defaultUrl = new QUrl(QDir::currentPath()+"/BOW/images/");  //Default Location to Create Sample Images Directories
     db = QSqlDatabase::addDatabase("QSQLITE");                  //Creating SQLite Database
@@ -55,7 +49,7 @@ Inventory::Inventory(int id,QWidget *parent) :
                 qDebug("Jewellery Does not Exist");
                 //emit(exit());
             }
-
+            else{
                 ui->iDLineEdit->setText(qry->value(0).toString());
                 ui->titleLineEdit->setText(qry->value(1).toString());
                 ui->descriptionLineEdit->setText(qry->value(2).toString());
@@ -66,7 +60,7 @@ Inventory::Inventory(int id,QWidget *parent) :
                 QPixmap mp(ui->imageLineEdit->text());
                 ui->label->setPixmap(mp);
                 ui->label->setScaledContents(true);
-
+            }
         }
     }
     else{                                                           // id==0 for New Jwellery
@@ -247,7 +241,8 @@ void Inventory::on_imageset_recieve(QVector<QPixmap> imgset){       //SLOT to Re
 
 void Inventory::on_pushButton_4_clicked()                           // Open the Image Capture Window
 {
-    newCapture = new ImageCapture(0,capture);
+    //newCapture = new ImageCapture(0,capture);
+    newCapture = new ImageCapture(0);
     newCapture->show();
     connect(newCapture,SIGNAL(gotImageSet(QVector<QPixmap>)),this,SLOT(on_imageset_recieve(QVector<QPixmap>)));
 }

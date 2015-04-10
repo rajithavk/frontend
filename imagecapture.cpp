@@ -1,7 +1,9 @@
 #include "imagecapture.h"
 #include "ui_imagecapture.h"
 
-ImageCapture::ImageCapture(QWidget *parent,cv::VideoCapture *c) :
+//ImageCapture::ImageCapture(QWidget *parent,cv::VideoCapture *c) :
+ImageCapture::ImageCapture(QWidget *parent) :
+
     QWidget(parent),
     ui(new Ui::ImageCapture),
     currentGrabber(NULL)
@@ -14,7 +16,7 @@ ImageCapture::ImageCapture(QWidget *parent,cv::VideoCapture *c) :
     URL = settings.value("url").toString();
     settings.endGroup();
 
-    vcap = *c;
+    vcap = *capture;
 
     foreach(QImageGrabber *currentGrabber,imageGrabbers){
         ui->comboBoxGrabberTypes->addItem(currentGrabber->grabberName());
@@ -103,6 +105,8 @@ void ImageCapture::opencvGrabImage()
     qDebug() << "Here we go";
     while(cvIsGrabbing){
         if(vcap.read(image)){
+           Rect rect(200,0,400,500);
+           image = image(rect);
             cvImage = new QImage(cvMatToQImage(image));
             emit newOpencvGrabbedImage(cvImage);
         }

@@ -12,7 +12,7 @@
 #include <QPushButton>
 #include <iostream>
 
-#define Path_to_DB "test.db"
+#define Path_to_DB "dbinventory.db"
 
 using namespace std;
 
@@ -80,7 +80,8 @@ display::display(QWidget *parent, map<int, QPixmap> *pics):
 //            QIcon ButtonIcon(pixmap);
             QIcon ButtonIcon(pic);
             a->setIcon(ButtonIcon);
-            a->setIconSize(pic.rect().size());
+            //a->setIconSize(pic.rect().size());
+            a->setIconSize(a->rect().size());
 
             QMenu *menu = new QMenu(this);
             menu->addAction("Edit");
