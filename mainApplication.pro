@@ -80,7 +80,7 @@ CONFIG  += c++11
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += opencv
 
-unix|win32: LIBS += -lboost_filesystem -lboost_system
+unix|win32: LIBS += -lboost_filesystem -lboost_system -fopenmp
 
 OTHER_FILES += \
     README.md
@@ -88,4 +88,4 @@ OTHER_FILES += \
 RESOURCES += \
     res.qrc
 
-QMAKE_CXXFLAGS += -Wno-unused-parameter
+QMAKE_CXXFLAGS += -Wno-unused-parameter -fopenmp

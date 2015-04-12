@@ -38,14 +38,13 @@ vision::~vision(){
 
 
 int vision::buildVocabulary(){
-	Mat input , descriptor, features_unclustered;
-	vector<KeyPoint> keypoints;
 
-    //multimap<string,Mat>::iterator itr = training_set.begin();
+    Mat input , descriptor;
+    vector<KeyPoint> keypoints;
 
     for(vector<string>::iterator itr = classes.begin();itr!=classes.end();itr++){
         multimap<string,Mat>::iterator it = training_set.find((*itr));
-        for(int c=0;c<20;c++){
+        for(int c=0;c<NUM_OF_VOCABULARY_SAMPLES;c++){
                     cout << c;
                     input = (*it).second;
                     keypoints = getKeyPoints(input);
@@ -68,7 +67,6 @@ int vision::buildVocabulary(){
 
 	vocabulary = bowTrainer->cluster();
 
-
 	FileStorage fs1(VOCABULARY_FILE.c_str(),FileStorage::WRITE);
 	fs1 << "Vocabulary" << vocabulary;
 	fs1.release();
@@ -86,63 +84,86 @@ int vision::buildVocabulary(){
 //=================================================================================================
 
 int vision::trainSVM(){
-	Mat hist, image;									//vocabulary -> moved to private global
-	vector<KeyPoint> keypoints;
+    Mat hist;									//vocabulary -> moved to private global
+    //vector<KeyPoint> keypoints;
 	if(initVocabulary()!=0) return -1;
 
-	if(keypoints_vector.size()==0){
-		cout << "Making Keypoints"<<endl;
-		for(multimap<string,Mat>::iterator it = training_set.begin();it!=training_set.end();it++){
+    keypoints_vector.clear();
+    multimap<string,Mat>::iterator it;
 
-						Mat input = (*it).second;
-						keypoints = getKeyPoints(input);
-						keypoints_vector.push_back(keypoints);
-				}
-	}
+    valarray<pair<string,Mat>> items(num_of_samples);
+    valarray<vector<KeyPoint>> keypointsarr(num_of_samples);
+    int i=0;
+    for(it= training_set.begin();it!=training_set.end();it++){
+        items[i] = (*it); i++;
+    }
 
+    #pragma omp parallel for default(shared)
+    for(int x=0;x<num_of_samples;x++){
+        Mat input = items[x].second;
+        vector<KeyPoint> keypoints = getKeyPoints(input);
+        keypointsarr[x] = keypoints;
+        qDebug() << x;
+        //keypoints_vector.push_back(keypoints);
+
+    }
+
+    for(int x=0;x<num_of_samples;x++)
+        keypoints_vector.push_back(keypointsarr[x]);
+//    for(it= training_set.begin();it!=training_set.end();it++){
+
+//                                Mat input = (*it).second;
+//                                keypoints = getKeyPoints(input);
+//                                keypoints_vector.push_back(keypoints);
+//    }
+
+
+
+
+    qDebug() << "KeyPoint extraction Done";
 
 	bowDescriptorExtractor->setVocabulary(vocabulary);
 
+    qDebug() << "here";
 	map<string,Mat> classes_training_data;
 	classes_training_data.clear();
 
 	vector < vector <KeyPoint> >::iterator itr = keypoints_vector.begin();
 
+        for(multimap<string,Mat>::iterator it=training_set.begin();it!=training_set.end();it++){
+            bowDescriptorExtractor->compute((*it).second,(*itr),hist);
+            string _class = (*it).first;
 
-	for(multimap<string,Mat>::iterator it=training_set.begin();it!=training_set.end();it++){
+            if(classes_training_data.count(_class) == 0){
+                classes_training_data[_class].create(0,hist.cols,hist.type());
+            }
 
-		bowDescriptorExtractor->compute((*it).second,(*itr),hist);
+            classes_training_data[_class].push_back(hist);
+            itr++;
 
-		string _class = (*it).first;
-		if(classes_training_data.count(_class) == 0){
-			classes_training_data[_class].create(0,hist.cols,hist.type());
-		}
+            //cout << classes_training_data[_class].rows << endl;
+            //cout << hist.cols << hist.type() << endl;
+        }
 
-		classes_training_data[_class].push_back(hist);
-		itr++;
-
-
-		//cout << classes_training_data[_class].rows << endl;
-		//cout << hist.cols << hist.type() << endl;
-	}
+    qDebug() << "Histograms Created";
 
 	CvSVMParams svmparams;
     svmparams.svm_type	=	CvSVM::C_SVC;
     svmparams.kernel_type	= CvSVM::RBF;
-    svmparams.degree = CvSVM::DEGREE;
-    svmparams.gamma = CvSVM::GAMMA;
-    svmparams.coef0 = CvSVM::COEF;
-    svmparams.C  = CvSVM::C;
-    svmparams.nu = CvSVM::NU_SVC;
-    svmparams.p = CvSVM::P;
+    svmparams.degree = 3;
+    svmparams.gamma = 0.1;
+    svmparams.coef0 = 0;
+    svmparams.C  = 1;
+    svmparams.nu = 0.5;
+    svmparams.p = 0.1;
     svmparams.term_crit = cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS,10000, 0.000001);
-    //svmparams.class_weights = NULL;
+    svmparams.class_weights = NULL;
 
 
 
-	//sfor(map<string,Mat>::iterator it = classes_training_data.begin();it != classes_training_data.end();it++){
+    //for(map<string,Mat>::iterator it = classes_training_data.begin();it != classes_training_data.end();it++){
 
-    for(vector<string>::iterator it = classes.begin();it!=classes.end();it++){
+    for(vector<string>::iterator it = classes.begin();it<=classes.end();it++){
 		//string class_ = (*it).first;
 		string class_ = (*it);
 		cout << "training.class : " << class_ << " .. " << endl;
@@ -212,7 +233,6 @@ int vision::testImage(Mat testimage){
 	//cout << hist.cols << endl;
 	for(map<string,CvSVM>::iterator it=classes_classifiers.begin();it!=classes_classifiers.end();++it){
 		float res = (*it).second.predict(hist,true);
-
 		cout << "class: " << (*it).first << " --> " << res << endl;
 	}
 	return 0;
@@ -233,9 +253,9 @@ Mat vision::getDescriptors(Mat image,vector<KeyPoint> keypoints){
 
 vector<KeyPoint> vision::getKeyPoints(Mat image){
 	vector<KeyPoint> keypoints;															// SIFT keypoints of the current image
-	//featureDetector = (new SiftFeatureDetector());												// feature Detector
-	featureDetector->detect(image,keypoints);
-	return keypoints;
+    //featureDetector = (new SiftFeatureDetector());												// feature Detector
+    featureDetector->detect(image,keypoints);
+    return keypoints;
 }
 
 void vision::drawKeyPoints(Mat image, vector<KeyPoint> keypoints){
@@ -398,11 +418,13 @@ vector<pair<string,float>> vision::testImage(string filename)
         //	testimage = imread("test.jpg",CV_LOAD_IMAGE_GRAYSCALE);
         vector<KeyPoint> keypoints;
         keypoints = getKeyPoints(testimage);
+        //#pragma omp parallel
         bowDescriptorExtractor->compute(testimage,keypoints,hist);
         //cout << hist.cols << endl;
-
+        float res;
         for(map<string,CvSVM>::iterator it=classes_classifiers.begin();it!=classes_classifiers.end();++it){
-            float res = (*it).second.predict(hist,true);
+            //#pragma omp parallel
+            res = (*it).second.predict(hist,true);
             //cout << "class: " << (*it).first << " --> " << res << endl;
             reslist.push_back(pair<string,float>((*it).first,res));
         }
@@ -412,7 +434,6 @@ vector<pair<string,float>> vision::testImage(string filename)
             for(vector<pair<string,float>>::iterator it = reslist.begin();it!=reslist.end();it++){
                 if((*it).second<=(*min_index).second)
                     min_index = it;
-            vector<pair<string,float>>::iterator min_index = reslist.begin();
             }
             lastResult.push_back((*min_index));
             cout << (*min_index).first << ":" << (*min_index).second << endl;

@@ -20,6 +20,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <iostream>
+#include <QDebug>
+#include <omp.h>
 
 #include <dirent.h>
 #include <unistd.h>
@@ -28,14 +30,12 @@
 #include <fstream>
 #include <stdlib.h>
 #include <string>
+#include <valarray>
 
 
 using namespace std;
 using namespace cv;
 using namespace boost::filesystem;
-
-
-
 
 class vision{
 
@@ -47,7 +47,7 @@ private :
 		Ptr<BOWImgDescriptorExtractor> bowDescriptorExtractor;
 		Ptr<DescriptorMatcher> descriptorMatcher;
 
-		Mat vocabulary;
+        Mat vocabulary , features_unclustered;
 		multimap<string,Mat> training_set;
 		map<string,CvSVM> classes_classifiers;
 		vector < vector <KeyPoint> > keypoints_vector;
@@ -57,16 +57,18 @@ private :
 
 		double edgeThreshold = 10;
 
-        const String TRAINING_DATA_FILE = "BOW/training_data.dat";
-		const String KEYPOINTS_FILE = "keypoints.yml";
-        const String TRAINING_DESCRIPTORS_FILE = "BOW/training_descriptors.yml";
-        const String VOCABULARY_FILE = "BOW/vocabulary.yml";
-        const String TRAINING_FOLDER = "BOW/images";
-        const String CLASSIFIERS_FOLDER = "BOW/classifiers";
-        const String TRAINING_SET_INFO = "BOW/trainingsetinfo.yml";
+        const String TRAINING_DATA_FILE =           "BOW/training_data.dat";
+        const String KEYPOINTS_FILE =               "keypoints.yml";
+        const String TRAINING_DESCRIPTORS_FILE =    "BOW/training_descriptors.yml";
+        const String VOCABULARY_FILE =              "BOW/vocabulary.yml";
+        const String TRAINING_FOLDER =              "BOW/images";
+        const String CLASSIFIERS_FOLDER =           "BOW/classifiers";
+        const String TRAINING_SET_INFO =            "BOW/trainingsetinfo.yml";
         const int CLUSTERS = 1000;
 
-        struct {
+        const int NUM_OF_VOCABULARY_SAMPLES = 20;
+        const int NUM_OF_TRAINING_SAMPLES   = 35;
+        struct{
             bool operator()(string a, string b)
             {
                 return stoi(a,nullptr,10) < stoi(b,nullptr,10);
@@ -84,16 +86,16 @@ public:
 		Mat getDescriptors(Mat image,vector<KeyPoint> keypoints);	// Get image descriptors for a given image keypoints combination
 		int buildVocabulary();										// build the vocabulary
 		int trainSVM();												// train the SVMs
-		int testImage(Mat testimage);											// testing an input image against SVMs
+        int testImage(Mat testimage);								// testing an input image against SVMs
 		int initClassifiers();										// load SVMs
         vector<pair<string,float>> testImage(string filename);
+
 
         void clearTrainingSet();
 		void openCamera(VideoCapture cap);
         multimap<string,Mat> getTrainingSet();
 
         vector <string> classes;
-
 
 		vision();
 		~vision();
