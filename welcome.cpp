@@ -101,10 +101,17 @@ void welcome::on_btnStream_clicked()
 {
     QSettings settings;
     settings.beginGroup("mjpgGrabber");
-    //QString URL = settings.value("url").toString();
-    QString URL = "http://10.0.0.1:8081";
+    QString URL = settings.value("url").toString();
+    //QString URL = "http://10.8.144.82:8080/stream_viewer?topic=/camera/image";
     settings.endGroup();
-    capture = new cv::VideoCapture(URL.toLocal8Bit().data());
-    if(capture->isOpened()) qDebug() << "Stream Pre-Opened";
-    capture->grab();
+    capture = new cv::VideoCapture();
+
+
+    if(vcap.open("http://10.8.144.82:8080/stream_viewer?topic=/camera/image")) qDebug() << "TRUE";
+    if(capture->open(URL.toStdString())){
+        //qDebug() << vc.open();
+        qDebug() << "Can't open " << URL;
+        if(capture->isOpened()) qDebug() << "Stream Pre-Opened";
+        capture->grab();
+    }
 }

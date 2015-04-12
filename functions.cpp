@@ -41,17 +41,20 @@ int vision::buildVocabulary(){
 	Mat input , descriptor, features_unclustered;
 	vector<KeyPoint> keypoints;
 
+    //multimap<string,Mat>::iterator itr = training_set.begin();
 
-	for(multimap<string,Mat>::iterator it = training_set.begin();it!=training_set.end();it++){
-
-				input = (*it).second;
-				keypoints = getKeyPoints(input);
-				keypoints_vector.push_back(keypoints);
-				descriptor = getDescriptors(input,keypoints);
-				features_unclustered.push_back(descriptor);
-				//cout << imagefile->d_name << " ";
-
-		}
+    for(vector<string>::iterator itr = classes.begin();itr!=classes.end();itr++){
+        multimap<string,Mat>::iterator it = training_set.find((*itr));
+        for(int c=0;c<20;c++){
+                    cout << c;
+                    input = (*it).second;
+                    keypoints = getKeyPoints(input);
+                    keypoints_vector.push_back(keypoints);
+                    descriptor = getDescriptors(input,keypoints);
+                    features_unclustered.push_back(descriptor);
+                    it++;
+            }
+    }
 
 	cout << "Total Descriptors : " << features_unclustered.rows << endl;
 	FileStorage fs(TRAINING_DESCRIPTORS_FILE.c_str(),FileStorage::WRITE);
@@ -124,16 +127,16 @@ int vision::trainSVM(){
 	}
 
 	CvSVMParams svmparams;
-	svmparams.svm_type	=	CvSVM::C_SVC;
-	svmparams.kernel_type	= CvSVM::LINEAR;
-	svmparams.degree = 0.0;
-	svmparams.gamma = 0.0;
-	svmparams.coef0 = 0.0;
-	svmparams.C  = 1000;
-	svmparams.nu = 0;
-	svmparams.p = 0;
-	svmparams.term_crit = cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS,10000, 0.000001);
-	svmparams.class_weights = NULL;
+    svmparams.svm_type	=	CvSVM::C_SVC;
+    svmparams.kernel_type	= CvSVM::RBF;
+    svmparams.degree = CvSVM::DEGREE;
+    svmparams.gamma = CvSVM::GAMMA;
+    svmparams.coef0 = CvSVM::COEF;
+    svmparams.C  = CvSVM::C;
+    svmparams.nu = CvSVM::NU_SVC;
+    svmparams.p = CvSVM::P;
+    svmparams.term_crit = cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS,10000, 0.000001);
+    //svmparams.class_weights = NULL;
 
 
 
@@ -272,6 +275,8 @@ int vision::initVocabulary(String filename){
 //=================================================================================================
 // 								Load Training Image Set
 //=================================================================================================
+
+
 int vision::loadTrainingSet(){
 	num_of_samples = 0;
 	string class_;
@@ -294,6 +299,7 @@ int vision::loadTrainingSet(){
 				num_of_samples++;
 			}
 	}
+    sort(classes.begin(),classes.end(),customComp);
     FileStorage fs1(TRAINING_SET_INFO.c_str(),FileStorage::WRITE);
 	fs1 << "num_of_samples" << num_of_samples;
 	fs1 << "classes" << classes;

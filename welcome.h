@@ -42,7 +42,7 @@ private:
     Inventory *invt;
     display *d;
     map<int,QPixmap> *mp;
-
+     cv::VideoCapture vcap;
 };
 
 #endif // WELCOME_H

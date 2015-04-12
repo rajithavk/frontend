@@ -160,7 +160,6 @@ void BOW::on_btnTestFolder_clicked()
         dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
         QStringList dirList = dir.entryList();
         //qDebug() << dirList.count();
-        int d = 0;
 
         if(!dirList.count()>0)  return;
         QDir ims;

@@ -16,7 +16,6 @@ ImageCapture::ImageCapture(QWidget *parent) :
     URL = settings.value("url").toString();
     settings.endGroup();
 
-    vcap = *capture;
 
     foreach(QImageGrabber *currentGrabber,imageGrabbers){
         ui->comboBoxGrabberTypes->addItem(currentGrabber->grabberName());
@@ -63,6 +62,12 @@ void ImageCapture::on_comboBoxGrabberTypes_activated(int index)
     }
     else{
             qDebug() << "OpenCV Grabber Selected";
+            if(capture!=NULL){
+                vcap = *capture;
+            }else{
+                qDebug() << "Connect to stream first";
+                return;
+            }
             connect(this,SIGNAL(newOpencvGrabbedImage(QImage*)),this,SLOT(newImageReceived(QImage*)));
             //if(vcap.open(URL.toStdString())){
             if(vcap.isOpened()){

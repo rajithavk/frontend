@@ -66,6 +66,12 @@ private :
         const String TRAINING_SET_INFO = "BOW/trainingsetinfo.yml";
         const int CLUSTERS = 1000;
 
+        struct {
+            bool operator()(string a, string b)
+            {
+                return stoi(a,nullptr,10) < stoi(b,nullptr,10);
+            }
+        } customComp;
 
 
 public:
