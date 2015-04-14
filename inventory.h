@@ -6,7 +6,7 @@
 #include <QtSql/QtSql>
 #include <QMessageBox>
 #include <QFileDialog>
-#include "imagecapture.h"
+#include <imagecapture.h>
 #include <opencv2/opencv.hpp>
 #include <global_objects.h>
 

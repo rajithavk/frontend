@@ -50,16 +50,17 @@ Inventory::Inventory(int id,QWidget *parent) :
                 //emit(exit());
             }
             else{
-                ui->iDLineEdit->setText(qry->value(0).toString());
-                ui->titleLineEdit->setText(qry->value(1).toString());
-                ui->descriptionLineEdit->setText(qry->value(2).toString());
-                ui->priceLineEdit->setText(qry->value(3).toString());
-                ui->directoryLineEdit->setText(qry->value(4).toString());
-                ui->imageLineEdit->setText(qry->value(5).toString());
+                    ui->iDLineEdit->setText(qry->value(0).toString());
+                    ui->titleLineEdit->setText(qry->value(1).toString());
+                    ui->descriptionLineEdit->setText(qry->value(2).toString());
+                    ui->priceLineEdit->setText(qry->value(3).toString());
+                    ui->directoryLineEdit->setText(qry->value(4).toString());
+                    ui->imageLineEdit->setText(qry->value(5).toString());
 
-                QPixmap mp(ui->imageLineEdit->text());
-                ui->label->setPixmap(mp);
-                ui->label->setScaledContents(true);
+                    QPixmap mp(ui->imageLineEdit->text());
+                    ui->label->setPixmap(mp);
+                    ui->label->setScaledContents(true);
+
             }
         }
     }
@@ -68,12 +69,13 @@ Inventory::Inventory(int id,QWidget *parent) :
         ui->directoryLineEdit->setText(defaultUrl->path()+ui->iDLineEdit->text());  // Generate the Directory path for the Image Store
         ui->priceLineEdit->setText("0");
     }
+    delete qry;
 
 }
 
 Inventory::~Inventory()
 {
-    capture->release();
+    db.close();
     delete ui;
     delete qry;
 }
@@ -88,6 +90,7 @@ void Inventory::on_pushButton_2_clicked()                       // Clearing the 
         msg.setIcon(QMessageBox::Question);
         msg.setStandardButtons(QMessageBox::Abort|QMessageBox::Ok);
         msg.setDefaultButton(QMessageBox::Abort);
+        qry = new QSqlQuery(db);
         qry->prepare("DELETE FROM items WHERE id = :id");
         qry->bindValue(":id",ui->iDLineEdit->text());
         int ret = msg.exec();
@@ -110,6 +113,8 @@ void Inventory::on_pushButton_2_clicked()                       // Clearing the 
         default:
             break;
         }
+
+        delete qry;
 
     }
     else{
@@ -137,10 +142,15 @@ bool Inventory::isEmpty(){                                      // Check if the 
 
 void Inventory::on_pushButton_clicked()                         // INSERTing the new RECORD into the TABLE
 {
+    if(!db.isOpen()) {  qDebug() << "DB is not ready";
+                        return;}
+
+    qry = new QSqlQuery(db);
+
     if(!isEmpty()){
 
         if(editingMode){
-            qry->prepare("UPDATE items SET id = :id, title = :title, description = :description, price = :price, directory = :directory, image = :image");
+            qry->prepare("UPDATE items SET title = :title, description = :description, price = :price, directory = :directory, image = :image WHERE id =:id");
         }
         else{
             if(!saveImageSet())
@@ -188,6 +198,7 @@ void Inventory::on_pushButton_clicked()                         // INSERTing the
         msg.setIcon(QMessageBox::Critical);
         msg.exec();
     }
+    delete qry;
 }
 
 void Inventory::nextId(){

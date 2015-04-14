@@ -113,5 +113,9 @@ void welcome::on_btnStream_clicked()
         qDebug() << "Can't open " << URL;
         if(capture->isOpened()) qDebug() << "Stream Pre-Opened";
         capture->grab();
+        QMessageBox msg;
+        msg.setText("Successfully Connected to Camera Stream");
+        msg.setIcon(QMessageBox::Information);
+        msg.exec();
     }
 }

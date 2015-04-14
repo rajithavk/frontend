@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <opencv2/core/core.hpp>
 #include "robot/crop.h"
-#include "grid/display.h"
+
 #include <opencv2/opencv.hpp>
 #include "CONV.h"
 #include <QFuture>

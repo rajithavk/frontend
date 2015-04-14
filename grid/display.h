@@ -10,6 +10,9 @@
 #include <QSignalMapper>
 #include <QMenu>
 
+#include <imagecapture.h>
+#include <inventory.h>
+
 using namespace std;
 namespace Ui {
 class display;
@@ -25,14 +28,22 @@ public:
 
 private slots:
     void butgrid(const QString &passed);
+    void Delete(const QString &passed);
+    void Replace(const QString &passed);
+    void Edit(const QString &passed);
 
 private:
     Ui::display *ui;
     QSqlDatabase dbc;
     QSignalMapper *signalMapper_click;
     QSignalMapper *signalMapper_rightclick;
+    QSignalMapper *signalMapper_Edit;
+    QSignalMapper *signalMapper_Delete;
+    QSignalMapper *signalMapper_Replace;
     map <int, QPixmap> *pics;
     item_details *details;
+
+
 
 };
 

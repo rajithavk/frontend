@@ -274,8 +274,6 @@ void ImageCapture::fromRobot(QString m)
         msg.exec();
 
     if(testImagesMap.size() > 0){
-        display *temp = new display(0,&testImagesMap);
-        temp->show();
     }
 
     }
