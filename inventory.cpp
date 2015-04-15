@@ -14,6 +14,10 @@ Inventory::Inventory(int id,QWidget *parent) :
 
 
     defaultUrl = new QUrl(QDir::currentPath()+"/BOW/images/");  //Default Location to Create Sample Images Directories
+
+    db.close();
+    db.removeDatabase("QSQLITE");
+
     db = QSqlDatabase::addDatabase("QSQLITE");                  //Creating SQLite Database
     db.setDatabaseName("dbinventory.db");
 
@@ -69,15 +73,21 @@ Inventory::Inventory(int id,QWidget *parent) :
         ui->directoryLineEdit->setText(defaultUrl->path()+ui->iDLineEdit->text());  // Generate the Directory path for the Image Store
         ui->priceLineEdit->setText("0");
     }
-    delete qry;
+
+    qry->finish();
 
 }
 
 Inventory::~Inventory()
 {
+    qry->finish();
+    db.~QSqlDatabase();
     db.close();
-    delete ui;
+    db.removeDatabase("QSQLITE");
+
     delete qry;
+    delete ui;
+
 }
 
 void Inventory::on_pushButton_2_clicked()                       // Clearing the Form
@@ -114,8 +124,7 @@ void Inventory::on_pushButton_2_clicked()                       // Clearing the 
             break;
         }
 
-        delete qry;
-
+        qry->finish();
     }
     else{
         QList<QLineEdit*> les = this->findChildren<QLineEdit *>();
@@ -198,7 +207,7 @@ void Inventory::on_pushButton_clicked()                         // INSERTing the
         msg.setIcon(QMessageBox::Critical);
         msg.exec();
     }
-    delete qry;
+    qry->finish();
 }
 
 void Inventory::nextId(){
@@ -217,6 +226,8 @@ void Inventory::nextId(){
             QVariant id = rec.value(0).toInt() + 1;
             ui->iDLineEdit->setText(QString().number(id.toInt()));
     }
+
+    qry->finish();
 }
 
 void Inventory::on_pushButton_3_clicked()                   //Close the Window

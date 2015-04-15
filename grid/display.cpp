@@ -46,7 +46,7 @@ display::display(QWidget *parent, map<int, QPixmap> *pics): QMainWindow(parent),
                     QPixmap pixmap(path_to_pic);
                     pics_temp[++pic_cnt] = pixmap;
                 }
-
+                qry.finish();
             }else{
                 QMessageBox msgBox;
                 msgBox.setText("database file didn't open.........!!!");
@@ -61,6 +61,7 @@ display::display(QWidget *parent, map<int, QPixmap> *pics): QMainWindow(parent),
         this->pics = &pics_temp;
 
     }// if for default pics
+
     dbc.close();
     dbc.removeDatabase("QSQLITE");
 
