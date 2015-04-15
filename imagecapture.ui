@@ -167,7 +167,7 @@ p, li { white-space: pre-wrap; }
      <x>600</x>
      <y>220</y>
      <width>211</width>
-     <height>371</height>
+     <height>431</height>
     </rect>
    </property>
    <property name="title">
@@ -249,6 +249,19 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="text">
      <string>Stop</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnBack_2">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>320</y>
+      <width>97</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
     </property>
    </widget>
   </widget>

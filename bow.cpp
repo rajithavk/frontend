@@ -153,39 +153,9 @@ void BOW::on_pushButton_6_clicked()
 
 void BOW::on_btnTestFolder_clicked()
 {
-   QMultiMap<QString,vector<pair<string,float>>> results;
    try {
         QUrl url = QFileDialog::getExistingDirectoryUrl(this,"Select Directory",QDir::currentPath(),QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
-        QDir dir(url.path());
-        dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
-        QStringList dirList = dir.entryList();
-        //qDebug() << dirList.count();
-
-        if(!dirList.count()>0)  return;
-        QDir ims;
-        QStringList imList;
-        ims.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-
-        foreach (QString i ,dirList) {
-            qDebug() << i;
-            ims.setPath(dir.path()+"/"+i);
-            ims.setNameFilters(QStringList() << "*.jpg" << "*.JPG");
-            imList = ims.entryList();
-            foreach (QString a, imList) {
-                // qDebug() << ims.path()+"/"+a;
-                QString impath = ims.path() +"/" + a;
-                qDebug() << impath;
-                try {
-                    results.insert(i,bow->testImage(impath.toStdString()));
-                    qDebug() << "Result Added";
-
-                } catch (exception e) {
-                    qDebug() << e.what();
-                    qDebug() << "Error Here";
-                }
-            }
-        }
-
+        QMultiMap<QString,vector<pair<string,float>>> results = testFolder(url);
         saveXMLFile("betaresults",results);
   } catch (Exception e) {
         qDebug() << QString::fromStdString(e.err);
@@ -193,6 +163,45 @@ void BOW::on_btnTestFolder_clicked()
 
 
 }
+
+QMultiMap<QString,vector<pair<string,float>>> BOW::testFolder(QUrl url){
+    QMultiMap<QString,vector<pair<string,float>>> results;
+
+    QDir dir(url.path());
+    dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
+    QStringList dirList = dir.entryList();
+    //qDebug() << dirList.count();
+
+    if(!dirList.count()>0)  return results;
+    QDir ims;
+    QStringList imList;
+    ims.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+
+    foreach (QString i ,dirList) {
+        qDebug() << i;
+        ims.setPath(dir.path()+"/"+i);
+        ims.setNameFilters(QStringList() << "*.jpg" << "*.JPG");
+        imList = ims.entryList();
+        foreach (QString a, imList) {
+            // qDebug() << ims.path()+"/"+a;
+            QString impath = ims.path() +"/" + a;
+            qDebug() << impath;
+            try {
+                results.insert(i,bow->testImage(impath.toStdString()));
+                qDebug() << "Result Added";
+
+            } catch (exception e) {
+                qDebug() << e.what();
+                qDebug() << "Error Here";
+            }
+        }
+    }
+
+    return results;
+}
+
+
+
 
 void BOW::saveXMLFile(QString fileName, QMultiMap<QString, vector<pair<string, float> > > &results)
 {

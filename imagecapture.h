@@ -92,6 +92,7 @@ private slots:
 
     void snapIt();
     void fromRobot(QString m);
+    void on_btnBack_2_clicked();
 };
 
 #endif // IMAGECAPTURE_H

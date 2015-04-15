@@ -20,6 +20,9 @@ public:
     explicit BOW(QWidget *parent = 0);
     ~BOW();
 
+    QMultiMap<QString,vector<pair<string,float>>> testFolder(QUrl url);
+    void saveXMLFile(QString fileName,QMultiMap<QString,vector<pair<string,float>>> & results);
+
 private slots:
     void on_pushButton_clicked();
 
@@ -37,7 +40,7 @@ private slots:
 
     void on_btnTestFolder_clicked();
 
-    void saveXMLFile(QString fileName,QMultiMap<QString,vector<pair<string,float>>> & results);
+
 
 private:
     Ui::BOW *ui;

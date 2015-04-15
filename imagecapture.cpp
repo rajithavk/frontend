@@ -26,6 +26,8 @@ ImageCapture::ImageCapture(QWidget *parent) :
     connect(&robot,SIGNAL(conState(QString)),this,SLOT(connectionState(QString)));
     imgCount = 1;
     cvGrabber = false;
+
+
 }
 
 ImageCapture::~ImageCapture()
@@ -275,6 +277,24 @@ void ImageCapture::fromRobot(QString m)
 
     if(testImagesMap.size() > 0){
     }
+        QDir dir = (QDir::currentPath()+"/BOW/Recent");
+        if(dir.exists()){
+            QDir odir = QDir::currentPath()+ "/BOW/Old";
+            if(!odir.exists()) dir.mkpath(odir.path());
+
+            dir.rename(dir.path(),(QDir::currentPath() + "/BOW/Old/" +  QDateTime::currentDateTime().toString(Qt::ISODate)));
+        }
+
+        dir.mkpath(dir.path());
+        for(map<int,QPixmap>::iterator it= testImagesMap.begin();it!=testImagesMap.end();it++){
+            it->second.save(dir.path()+"/"+ QString::number(it->first)+".jpg","JPG");
+        }
+
 
     }
+}
+
+void ImageCapture::on_btnBack_2_clicked()
+{
+    this->close();
 }
