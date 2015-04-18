@@ -20,8 +20,10 @@ public:
     explicit BOW(QWidget *parent = 0);
     ~BOW();
 
-    QMultiMap<QString,vector<pair<string,float>>> testFolder(QUrl url);
-    void saveXMLFile(QString fileName,QMultiMap<QString,vector<pair<string,float>>> & results);
+    QMultiMap<int,vector<pair<string,float>>> testFolder(QUrl url, bool mode);
+    void saveXMLFile(QString fileName, QMultiMap<int, vector<pair<string, float> > > &results);
+    void initVocabulary(bool s);
+    void initSVMs(bool s);
 
 private slots:
     void on_pushButton_clicked();
@@ -45,6 +47,12 @@ private slots:
 private:
     Ui::BOW *ui;
 
-};
+    struct{
+        bool operator()(QString& a,QString& b){
+            qDebug() << a + " " + b;
+            return a.toInt() < b.toInt();
+         }
+    } compareid;
 
+};
 #endif // BOW_H

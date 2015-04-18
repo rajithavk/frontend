@@ -8,7 +8,7 @@ QT       += core gui widgets network opengl websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql
 
-TARGET = subdirs #mainApplication
+TARGET = visin #mainApplication
 TEMPLATE = app
 
 
@@ -30,13 +30,13 @@ SOURCES += main.cpp\
     imagecapture.cpp \
     robot/json.cpp \
     robot/rosclient.cpp \
-    robot/crop.cpp \
     welcome.cpp \
     grid/display.cpp \
     grid/item_details.cpp \
     grid/items_details.cpp \
     grid/qrightclickpushbutton.cpp \
-    global_objects.cpp
+    global_objects.cpp \
+    robot/crop.cpp
 
 HEADERS  += bow.h \
     functions.hpp \
@@ -57,13 +57,13 @@ HEADERS  += bow.h \
     imagecapture.h \
     robot/json.h \
     robot/rosclient.h \
-    robot/crop.h \
     welcome.h \
     grid/display.h \
     grid/item_details.h \
     grid/items_details.h \
     grid/qrightclickpushbutton.h \
-    global_objects.h
+    global_objects.h \
+    robot/crop.h
 
 FORMS    += bow.ui \
     inventory.ui \
@@ -88,4 +88,4 @@ OTHER_FILES += \
 RESOURCES += \
     res.qrc
 
-QMAKE_CXXFLAGS += -Wno-unused-parameter -fopenmp
+QMAKE_CXXFLAGS += -Wno-unused-parameter -fopenmp -Wno-sign-compare

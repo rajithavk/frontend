@@ -15,6 +15,7 @@
 #include  "robot/rosclient.h"
 #include <stdlib.h>
 #include <opencv2/core/core.hpp>
+#include "bow.h"
 #include "robot/crop.h"
 
 #include <opencv2/opencv.hpp>
@@ -68,6 +69,7 @@ private:
 signals:
     void gotImageSet(QVector<QPixmap>);
     void newOpencvGrabbedImage(QImage *);
+    void call_grid(map<int,QPixmap>);
 
 private slots:
 

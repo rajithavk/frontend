@@ -5,6 +5,7 @@
 #include <QComboBox>
 #include <QFileDialog>
 #include "CONV.h"
+#include "QStringList"
 
 vision *bow;
 
@@ -95,32 +96,12 @@ void BOW::on_pushButton_3_clicked()
 
 void BOW::on_pushButton_4_clicked()
 {
-    if(bow->initClassifiers()==0){
-        QMessageBox msg;
-        msg.setText("SVM Loading Successful!");
-        msg.setIcon(QMessageBox::Information);
-        msg.exec();
-    }else{
-        QMessageBox msg;
-        msg.setText("SVM Loading unsuccessful!");
-        msg.setIcon(QMessageBox::Critical);
-        msg.exec();
-    }
+   initSVMs(0);
 }
 
 void BOW::on_pushButton_5_clicked()
 {
-    if(bow->initVocabulary()==0){
-        QMessageBox msg;
-        msg.setText("Vocabulary Loading Successful!");
-        msg.setIcon(QMessageBox::Information);
-        msg.exec();
-    }else{
-        QMessageBox msg;
-        msg.setText("Vocabulary Loading unsuccessful!");
-        msg.setIcon(QMessageBox::Critical);
-        msg.exec();
-    }
+    initVocabulary(0);
 }
 
 
@@ -155,7 +136,8 @@ void BOW::on_btnTestFolder_clicked()
 {
    try {
         QUrl url = QFileDialog::getExistingDirectoryUrl(this,"Select Directory",QDir::currentPath(),QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
-        QMultiMap<QString,vector<pair<string,float>>> results = testFolder(url);
+        QMultiMap<int,vector<pair<string,float>>> results = testFolder(url,1);
+
         saveXMLFile("betaresults",results);
   } catch (Exception e) {
         qDebug() << QString::fromStdString(e.err);
@@ -164,30 +146,39 @@ void BOW::on_btnTestFolder_clicked()
 
 }
 
-QMultiMap<QString,vector<pair<string,float>>> BOW::testFolder(QUrl url){
-    QMultiMap<QString,vector<pair<string,float>>> results;
-
+QMultiMap<int,vector<pair<string,float>>> BOW::testFolder(QUrl url,bool mode){
+    QMultiMap<int,vector<pair<string,float>>> results;
     QDir dir(url.path());
+    dir.setSorting(QDir::LocaleAware);
     dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
     QStringList dirList = dir.entryList();
     //qDebug() << dirList.count();
 
     if(!dirList.count()>0)  return results;
     QDir ims;
-    QStringList imList;
+    QStringList imTmp;
     ims.setFilter(QDir::Files | QDir::NoDotAndDotDot);
 
     foreach (QString i ,dirList) {
         qDebug() << i;
         ims.setPath(dir.path()+"/"+i);
         ims.setNameFilters(QStringList() << "*.jpg" << "*.JPG");
-        imList = ims.entryList();
+        imTmp = ims.entryList();
+        QStringList imList;
+        foreach (QString x, imTmp) {
+            imList.push_back(x.left(x.length()-4));
+        }
+        qSort(imList.begin(),imList.end(),compareid);
         foreach (QString a, imList) {
             // qDebug() << ims.path()+"/"+a;
-            QString impath = ims.path() +"/" + a;
+            QString impath = ims.path() +"/" + a + ".jpg";
             qDebug() << impath;
             try {
-                results.insert(i,bow->testImage(impath.toStdString()));
+                if(mode)
+                    results.insert(a.toInt(),bow->testImage(impath.toStdString()));
+                 else
+                    results.insert(i.toInt(),bow->testImage(impath.toStdString()));
+
                 qDebug() << "Result Added";
 
             } catch (exception e) {
@@ -203,7 +194,7 @@ QMultiMap<QString,vector<pair<string,float>>> BOW::testFolder(QUrl url){
 
 
 
-void BOW::saveXMLFile(QString fileName, QMultiMap<QString, vector<pair<string, float> > > &results)
+void BOW::saveXMLFile(QString fileName, QMultiMap<int, vector<pair<string, float> > > &results)
 {
  QFile file(QDir::currentPath() + "/BOW/" + fileName +".xml");
  if(!file.open(QIODevice::WriteOnly)) return;
@@ -216,12 +207,12 @@ void BOW::saveXMLFile(QString fileName, QMultiMap<QString, vector<pair<string, f
  xmlWriter.writeStartDocument();
  xmlWriter.writeStartElement("Results");
  try{
- for(QMultiMap<QString,vector<pair<string,float > > >::iterator it = results.begin();it!=results.end();it++){
+ for(QMultiMap<int,vector<pair<string,float > > >::iterator it = results.begin();it!=results.end();it++){
      vector<pair<string,float>>::iterator itv = it.value().begin();
    // if((it) == NULL) continue;
 
          xmlWriter.writeStartElement("Item");
-         xmlWriter.writeAttribute("Original",it.key());
+         xmlWriter.writeAttribute("Original",QString::number(it.key()));
              xmlWriter.writeStartElement("R1");
                 xmlWriter.writeAttribute("id",QString::fromStdString((*itv).first));
                 xmlWriter.writeAttribute("score",QString::number(((*itv).second)));
@@ -243,4 +234,50 @@ void BOW::saveXMLFile(QString fileName, QMultiMap<QString, vector<pair<string, f
      qDebug() << QString::fromStdString(e.err);
  }
  file.close();
+}
+
+void BOW::initVocabulary(bool s)
+{
+    if(bow->initVocabulary()==0){
+        if(s){
+            qDebug() << "Vocabulary Loading Successful!";
+        }else{
+            QMessageBox msg;
+            msg.setText("Vocabulary Loading Successful!");
+            msg.setIcon(QMessageBox::Information);
+            msg.exec();
+        }
+    }else{
+        if(s){
+            qDebug() << "Vocabulary Loading unsuccessful!";
+        }else{
+            QMessageBox msg;
+            msg.setText("Vocabulary Loading unsuccessful!");
+            msg.setIcon(QMessageBox::Critical);
+            msg.exec();
+        }
+    }
+}
+
+void BOW::initSVMs(bool s)
+{
+    if(bow->initClassifiers()==0){
+        if(s){
+            qDebug() << "SVM Loading Successful!";
+        }else{
+            QMessageBox msg;
+            msg.setText("SVM Loading Successful!");
+            msg.setIcon(QMessageBox::Information);
+            msg.exec();
+        }
+    }else{
+        if(s){
+            qDebug() << "SVM Loading unsuccessful!";
+        }else{
+            QMessageBox msg;
+            msg.setText("SVM Loading unsuccessful!");
+            msg.setIcon(QMessageBox::Critical);
+            msg.exec();
+        }
+    }
 }

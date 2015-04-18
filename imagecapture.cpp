@@ -112,8 +112,9 @@ void ImageCapture::opencvGrabImage()
     qDebug() << "Here we go";
     while(cvIsGrabbing){
         if(vcap.read(image)){
-           Rect rect(200,0,400,500);
-           image = image(rect);
+           // Rect rect(200,0,400,500);
+            //image = image(rect);
+            //qDebug() << segment(image);
             cvImage = new QImage(cvMatToQImage(image));
             emit newOpencvGrabbedImage(cvImage);
         }
@@ -269,28 +270,43 @@ void ImageCapture::snapIt()
 void ImageCapture::fromRobot(QString m)
 {
     QMessageBox msg;
-    if(m == "md"){
+    if(m == "ud"){
+        robot.publish("hm");
         msg.setWindowTitle("Finished");
         msg.setText("Autorun Finished");
         msg.setIcon(QMessageBox::Information);
         msg.exec();
 
-    if(testImagesMap.size() > 0){
-    }
-        QDir dir = (QDir::currentPath()+"/BOW/Recent");
-        if(dir.exists()){
-            QDir odir = QDir::currentPath()+ "/BOW/Old";
-            if(!odir.exists()) dir.mkpath(odir.path());
+        if(testImagesMap.size() > 0){
+            QDir dir = (QDir::currentPath()+"/BOW/Recent/A");
+            if(dir.exists()){
+                QDir odir = QDir::currentPath()+ "/BOW/Old";
+                if(!odir.exists()) odir.mkpath(odir.path());
 
-            dir.rename(dir.path(),(QDir::currentPath() + "/BOW/Old/" +  QDateTime::currentDateTime().toString(Qt::ISODate)));
+                dir.rename(dir.path(),(QDir::currentPath() + "/BOW/Old/" +  QDateTime::currentDateTime().toString(Qt::ISODate)));
+            }
+
+            dir.mkpath(dir.path());
+            for(map<int,QPixmap>::iterator it= testImagesMap.begin();it!=testImagesMap.end();it++){
+                it->second.save(dir.path()+"/"+ QString::number(it->first)+".jpg","JPG");
+            }
+
+            BOW *b = new BOW();
+            b->initVocabulary(1);
+            b->initSVMs(1);
+            QMultiMap<int,vector<pair<string,float>>> tmpres = b->testFolder(QUrl(QDir::currentPath()+"/BOW/Recent"),1);
+
+            map<int,QPixmap> res;
+            for(QMultiMap<int,vector<pair<string,float > > >::iterator it=tmpres.begin();it!=tmpres.end();it++){
+                vector<pair<string,float>>::iterator itv = it.value().begin();
+                QPixmap mp(QDir::currentPath()+"BOW/images/"+ QString::fromStdString((*itv).first) + "/10.jpg");
+                res[QString::fromStdString((*itv).first).toInt()] = mp;
+            }
+
+            emit call_grid(res);
+            qDebug() << "Signal Emited to get the display";
+
         }
-
-        dir.mkpath(dir.path());
-        for(map<int,QPixmap>::iterator it= testImagesMap.begin();it!=testImagesMap.end();it++){
-            it->second.save(dir.path()+"/"+ QString::number(it->first)+".jpg","JPG");
-        }
-
-
     }
 }
 

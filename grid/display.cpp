@@ -190,7 +190,8 @@ void display::Replace(const QString &passed){
     msgBox.exec();
 }
 
-void display::Edit(const QString &passed){
+void display::Edit(const QString &passed)
+{
     Inventory *inv = new Inventory(passed.toInt(),0);
     inv->show();
 }

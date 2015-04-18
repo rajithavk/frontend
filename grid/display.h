@@ -3,15 +3,13 @@
 
 #include "item_details.h"
 #include "qrightclickpushbutton.h"
-
+#include  "inventory.h"
 #include <QMainWindow>
 #include <map>
 #include <QSqlDatabase>
 #include <QSignalMapper>
 #include <QMenu>
 
-#include <imagecapture.h>
-#include <inventory.h>
 
 using namespace std;
 namespace Ui {

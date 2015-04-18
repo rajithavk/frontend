@@ -35,6 +35,8 @@ private slots:
 
     void on_btnStream_clicked();
 
+    void on_call_for_inventory(map<int,QPixmap> res);
+
 private:
     Ui::welcome *ui;
     BOW *bow;

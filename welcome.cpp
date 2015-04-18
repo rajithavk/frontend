@@ -7,6 +7,7 @@ welcome::welcome(QWidget *parent) :
     ui(new Ui::welcome)
 {
     ui->setupUi(this);
+
     QDateTime dt;
     qDebug() << dt.currentDateTime().toString(Qt::ISODate);
 
@@ -39,6 +40,7 @@ void welcome::on_btnRun_clicked()
 {
     imgcap = new ImageCapture();
     imgcap->show();
+    connect(imgcap,SIGNAL(call_grid(map<int,QPixmap>)),this,SLOT(on_call_for_inventory(map<int,QPixmap>)));
 }
 
 void welcome::on_btnGrid_clicked()
@@ -107,10 +109,8 @@ void welcome::on_btnStream_clicked()
     capture = new cv::VideoCapture();
 
 
-    if(vcap.open("http://10.8.144.82:8080/stream_viewer?topic=/camera/image")) qDebug() << "TRUE";
+    //if(vcap.open(URL.toLocal8Bit().data())) qDebug() << "TRUE";
     if(capture->open(URL.toStdString())){
-        //qDebug() << vc.open();
-        qDebug() << "Can't open " << URL;
         if(capture->isOpened()) qDebug() << "Stream Pre-Opened";
         capture->grab();
         QMessageBox msg;
@@ -118,4 +118,11 @@ void welcome::on_btnStream_clicked()
         msg.setIcon(QMessageBox::Information);
         msg.exec();
     }
+}
+
+void welcome::on_call_for_inventory(map<int, QPixmap> res)
+{
+    qDebug() << res.size();
+    display dis(0,&res);
+    dis.show();
 }
