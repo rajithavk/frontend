@@ -1,6 +1,9 @@
 #include "imagecapture.h"
 #include "ui_imagecapture.h"
-#include "grid/display.h"
+//#include "grid/display.h"
+#include "ResultsGrid/display2.h"
+
+
 //ImageCapture::ImageCapture(QWidget *parent,cv::VideoCapture *c) :
 ImageCapture::ImageCapture(QWidget *parent) :
 
@@ -53,7 +56,10 @@ ImageCapture::ImageCapture(QWidget *parent) :
 //    display *dis= new display(0,m);
 //    dis->show();
 
+    once_check = false;
     ///////////////////////////////////////////////////
+    connect(&robot, SIGNAL(snapIt()),this,SLOT(snapIt()));
+    connect(&robot,SIGNAL(robotSaid(QString)),this,SLOT(fromRobot(QString)));
 
 }
 
@@ -265,9 +271,9 @@ void ImageCapture::on_btnStop_clicked()
 void ImageCapture::on_pushButton_2_clicked()
 {
     robot.publish("run");
-    connect(&robot, SIGNAL(snapIt()),this,SLOT(snapIt()));
-    connect(&robot,SIGNAL(robotSaid(QString)),this,SLOT(fromRobot(QString)));
-    imgCount = 0;
+    //connect(&robot, SIGNAL(snapIt()),this,SLOT(snapIt()));
+    //connect(&robot,SIGNAL(robotSaid(QString)),this,SLOT(fromRobot(QString)));
+    //imgCount = 0;
 }
 
 void ImageCapture::snapIt()
@@ -283,9 +289,11 @@ void ImageCapture::snapIt()
        // QString path = QDir::currentPath() + "/BOW/RecentSet/" + time.currentDateTime().toString(Qt::ISODate) + ".jpg";
        // t.save(path,"JPG");
        // temp = convert(ui->graphicsViewImage->imageItem->getImage());
-        testImagesMap[imgCount++] = t;
-        ui->labelLastImage->setPixmap(t);
-        ui->labelLastImage->setScaledContents(true);
+        if(once_check==false){
+            testImagesMap[imgCount++] = t;
+            ui->labelLastImage->setPixmap(t);
+            ui->labelLastImage->setScaledContents(true);
+        }
     } catch (Exception e) {
         qDebug() << e.code;
     }
@@ -298,8 +306,9 @@ void ImageCapture::snapIt()
 void ImageCapture::fromRobot(QString m)
 {
     QMessageBox msg;
-    if(m == "ud"){
-        robot.publish("hm");
+    if(m == "ud" && once_check==false){
+        //robot.publish("hm");
+        once_check=true;
         qDebug() << "Asked to go home";
         msg.setWindowTitle("Finished");
         msg.setText("Autorun Finished");
@@ -311,8 +320,8 @@ void ImageCapture::fromRobot(QString m)
             if(dir.exists()){
                 QDir odir = QDir::currentPath()+ "/BOW/Old";
                 if(!odir.exists()) odir.mkpath(odir.path());
-
-                dir.rename(dir.path(),(QDir::currentPath() + "/BOW/Old/" +  QDateTime::currentDateTime().toString(Qt::ISODate)));
+                QDir dirr;
+                dirr.rename((QDir::currentPath()+"/BOW/Recent/A") , (dir.path(),(QDir::currentPath() + "/BOW/Old/" +  QDateTime::currentDateTime().toString(Qt::ISODate))));
             }
 
             dir.mkpath(dir.path());
@@ -340,8 +349,10 @@ void ImageCapture::fromRobot(QString m)
         //    //qDebug() << "Signal Emited to get the display";
             qDebug() << m->size();
 
-            display *dis= new display(0,m);
-            dis->show();
+            display2 *nd = new display2(0,&tmpres);
+            nd->show();
+            //display *dis= new display(0,m);
+            //dis->show();
 
         }
     }

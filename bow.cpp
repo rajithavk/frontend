@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include "CONV.h"
 #include "QStringList"
+#include "ResultsGrid/display2.h"
 
 vision *bow;
 
@@ -136,9 +137,12 @@ void BOW::on_btnTestFolder_clicked()
 {
    try {
         QUrl url = QFileDialog::getExistingDirectoryUrl(this,"Select Directory",QDir::currentPath(),QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
-        QMultiMap<int,vector<pair<string,float>>> results = testFolder(url,0);
+        QMultiMap<int,vector<pair<string,float>>> results = testFolder(url,1);
 
         saveXMLFile("betaresults",results);
+        display2 *nd = new display2(0,&results);
+        nd->show();
+
   } catch (Exception e) {
         qDebug() << QString::fromStdString(e.err);
   }

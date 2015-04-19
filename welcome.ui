@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>750</width>
-    <height>107</height>
+    <height>238</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>150</y>
       <width>111</width>
       <height>71</height>
      </rect>
@@ -31,7 +31,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>20</y>
+      <y>150</y>
       <width>111</width>
       <height>71</height>
      </rect>
@@ -44,7 +44,7 @@
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>20</y>
+      <y>150</y>
       <width>111</width>
       <height>71</height>
      </rect>
@@ -57,7 +57,7 @@
     <property name="geometry">
      <rect>
       <x>630</x>
-      <y>20</y>
+      <y>150</y>
       <width>111</width>
       <height>71</height>
      </rect>
@@ -70,7 +70,7 @@
     <property name="geometry">
      <rect>
       <x>370</x>
-      <y>20</y>
+      <y>150</y>
       <width>121</width>
       <height>71</height>
      </rect>
@@ -83,13 +83,34 @@
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>20</y>
+      <y>150</y>
       <width>121</width>
       <height>71</height>
      </rect>
     </property>
     <property name="text">
      <string>Connect Stream</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>40</y>
+      <width>511</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Trebuchet MS</family>
+      <pointsize>64</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Vision Inventory</string>
     </property>
    </widget>
   </widget>

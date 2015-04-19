@@ -100,10 +100,10 @@ void welcome::on_btnStream_clicked()
 
 void welcome::on_call_for_inventory(multimap<int, QPixmap> res)
 {
-    multimap<int,QPixmap> *m = &res;
-    //qDebug() << "Signal Emited to get the display";
-    qDebug() << m->size();
+//    multimap<int,QPixmap> *m = &res;
+//    //qDebug() << "Signal Emited to get the display";
+//    qDebug() << m->size();
 
-    display *dis= new display(0,m);
-    dis->show();
+//    display *dis= new display(0,m);
+//    dis->show();
 }

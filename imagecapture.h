@@ -68,6 +68,8 @@ private:
     QImage *cvImage;
     vision *b;
 
+    bool once_check;
+
 
 signals:
     void gotImageSet(QVector<QPixmap>);
