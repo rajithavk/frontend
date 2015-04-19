@@ -17,7 +17,7 @@ class welcome : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit welcome(QWidget *parent = 0);
+    explicit welcome(QMainWindow *parent = 0);
     ~welcome();
 
 private slots:
@@ -35,7 +35,8 @@ private slots:
 
     void on_btnStream_clicked();
 
-    void on_call_for_inventory(map<int,QPixmap> res);
+public slots:
+    void on_call_for_inventory(multimap<int, QPixmap> res);
 
 private:
     Ui::welcome *ui;
@@ -43,7 +44,7 @@ private:
     ImageCapture *imgcap;
     Inventory *invt;
     display *d;
-    map<int,QPixmap> *mp;
+    multimap<int,QPixmap> *mp;
      cv::VideoCapture vcap;
 };
 

@@ -53,7 +53,7 @@ void ROSClient::on_message(QString message){
     if(response=="pd"){
         emit(snapIt());
     }
-    else if(response=="md" || response=="td" || response=="ed" || response=="id"){
+    else if(response=="ud" || response=="td" || response=="ed" || response=="id"){
         emit(robotSaid(response));
     }
 }

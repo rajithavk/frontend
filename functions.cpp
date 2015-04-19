@@ -85,120 +85,102 @@ int vision::buildVocabulary(){
 
 int vision::trainSVM(){
     Mat hist;									//vocabulary -> moved to private global
-    //vector<KeyPoint> keypoints;
-	if(initVocabulary()!=0) return -1;
+    vector<KeyPoint> keypoints;
+    if(initVocabulary()!=0) return -1;
 
-    keypoints_vector.clear();
-    multimap<string,Mat>::iterator it;
+    if(keypoints_vector.size()==0){
+        qDebug() << "Making Keypoints";
+        for(multimap<string,Mat>::iterator it = training_set.begin();it!=training_set.end();it++){
 
-    valarray<pair<string,Mat>> items(num_of_samples);
-    valarray<vector<KeyPoint>> keypointsarr(num_of_samples);
-    int i=0;
-    for(it= training_set.begin();it!=training_set.end();it++){
-        items[i] = (*it); i++;
+                        Mat input = (*it).second;
+                        keypoints = getKeyPoints(input);
+                        keypoints_vector.push_back(keypoints);
+                }
     }
 
-    #pragma omp parallel for default(shared)
-    for(int x=0;x<num_of_samples;x++){
-        Mat input = items[x].second;
-        vector<KeyPoint> keypoints = getKeyPoints(input);
-        keypointsarr[x] = keypoints;
-        qDebug() << x;
-        //keypoints_vector.push_back(keypoints);
 
-    }
+    bowDescriptorExtractor->setVocabulary(vocabulary);
 
-    for(int x=0;x<num_of_samples;x++)
-        keypoints_vector.push_back(keypointsarr[x]);
-//    for(it= training_set.begin();it!=training_set.end();it++){
+    qDebug() << "Vocabulary Loaded";
+    map<string,Mat> classes_training_data;
+    classes_training_data.clear();
 
-//                                Mat input = (*it).second;
-//                                keypoints = getKeyPoints(input);
-//                                keypoints_vector.push_back(keypoints);
-//    }
+    vector < vector <KeyPoint> >::iterator itr = keypoints_vector.begin();
 
 
+    for(multimap<string,Mat>::iterator it=training_set.begin();it!=training_set.end();it++){
 
+        bowDescriptorExtractor->compute((*it).second,(*itr),hist);
 
-    qDebug() << "KeyPoint extraction Done";
-
-	bowDescriptorExtractor->setVocabulary(vocabulary);
-
-    qDebug() << "here";
-	map<string,Mat> classes_training_data;
-	classes_training_data.clear();
-
-	vector < vector <KeyPoint> >::iterator itr = keypoints_vector.begin();
-
-        for(multimap<string,Mat>::iterator it=training_set.begin();it!=training_set.end();it++){
-            bowDescriptorExtractor->compute((*it).second,(*itr),hist);
-            string _class = (*it).first;
-
-            if(classes_training_data.count(_class) == 0){
-                classes_training_data[_class].create(0,hist.cols,hist.type());
-            }
-
-            classes_training_data[_class].push_back(hist);
-            itr++;
-
-            //cout << classes_training_data[_class].rows << endl;
-            //cout << hist.cols << hist.type() << endl;
+        string _class = (*it).first;
+        if(classes_training_data.count(_class) == 0){
+            classes_training_data[_class].create(0,hist.cols,hist.type());
         }
 
-    qDebug() << "Histograms Created";
+        classes_training_data[_class].push_back(hist);
+        itr++;
 
-	CvSVMParams svmparams;
+
+        //cout << classes_training_data[_class].rows << endl;
+        //cout << hist.cols << hist.type() << endl;
+    }
+    qDebug() << "Histograms extracted";
+
+    CvSVMParams svmparams;
     svmparams.svm_type	=	CvSVM::C_SVC;
-    svmparams.kernel_type	= CvSVM::RBF;
-    svmparams.degree = 3;
-    svmparams.gamma = 0.1;
-    svmparams.coef0 = 0;
-    svmparams.C  = 1;
-    svmparams.nu = 0.5;
-    svmparams.p = 0.1;
+    svmparams.kernel_type	= CvSVM::LINEAR;
+    svmparams.degree = 0.0;
+    svmparams.gamma = 0.0;
+    svmparams.coef0 = 0.0;
+    svmparams.C  = 1000;
+    svmparams.nu = 0;
+    svmparams.p = 0;
     svmparams.term_crit = cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS,10000, 0.000001);
     svmparams.class_weights = NULL;
 
 
 
-    //for(map<string,Mat>::iterator it = classes_training_data.begin();it != classes_training_data.end();it++){
+    //sfor(map<string,Mat>::iterator it = classes_training_data.begin();it != classes_training_data.end();it++){
 
-    for(vector<string>::iterator it = classes.begin();it<=classes.end();it++){
-		//string class_ = (*it).first;
-		string class_ = (*it);
-		cout << "training.class : " << class_ << " .. " << endl;
+    for(vector<string>::iterator it = classes.begin();it!=classes.end();it++){
+        //string class_ = (*it).first;
+        string class_ = (*it);
+        cout << "training.class : " << class_ << " .. " << endl;
 
-		Mat samples(0,hist.cols,hist.type());
-		Mat labels(0,1,CV_32S);
-		samples.push_back(classes_training_data[class_]);
+        Mat samples(0,hist.cols,hist.type());
+        Mat labels(0,1,CV_32S);
+        samples.push_back(classes_training_data[class_]);
 
-		Mat class_label = Mat::ones(classes_training_data[class_].rows,1,CV_32S);
-		labels.push_back(class_label);
+        Mat class_label = Mat::ones(classes_training_data[class_].rows,1,CV_32S);
+        labels.push_back(class_label);
 
 
-		//for(map<string,Mat>::iterator it1 = classes_training_data.begin();it1!=classes_training_data.end();++it1){
+        //for(map<string,Mat>::iterator it1 = classes_training_data.begin();it1!=classes_training_data.end();++it1){
 
         for(vector<string>::iterator it1=classes.begin();it1!=classes.end();it1++){
-			//string not_class = (*it1).first;
-			string not_class = (*it1);
-			if(not_class.compare(class_) == 0) continue;
-			samples.push_back(classes_training_data[not_class]);
-			class_label = Mat::zeros(classes_training_data[not_class].rows,1,CV_32S);
-			//class_label *= -1;
-			labels.push_back(class_label);
-			//cout << samples.rows << " " << labels.rows<< endl;
-		}
+            //string not_class = (*it1).first;
+            string not_class = (*it1);
+            if(not_class.compare(class_) == 0) continue;
+            samples.push_back(classes_training_data[not_class]);
+            class_label = Mat::zeros(classes_training_data[not_class].rows,1,CV_32S);
+            //class_label *= -1;
+            labels.push_back(class_label);
+            //cout << samples.rows << " " << labels.rows<< endl;
+        }
 
-		//cout << "going to train" << endl;
-		//Mat samples_32f;
-		//.convertTo(samples_32f,CV_32F);
+        //cout << "going to train" << endl;
+        //Mat samples_32f;
+        //.convertTo(samples_32f,CV_32F);
 
-		//classes_classifiers[class_].train(samples_32f,labels,Mat(),Mat(),svmparams);
-		//classes_classifiers[class_].train(samples,labels,Mat(),Mat(),svmparams);
-		classes_classifiers[class_].train_auto(samples,labels,Mat(),Mat(),svmparams,10);
+        //classes_classifiers[class_].train(samples_32f,labels,Mat(),Mat(),svmparams);
+        //classes_classifiers[class_].train(samples,labels,Mat(),Mat(),svmparams);
+        classes_classifiers[class_].train_auto(samples,labels,Mat(),Mat(),svmparams,10);
         classes_classifiers[class_].save(String(CLASSIFIERS_FOLDER+ "/" + class_+ ".yml").c_str());
-		//cout << classes_classifiers.count(class_) << endl;
-	}
+        qDebug() << "save" + QString::fromStdString(class_);
+        //cout << classes_classifiers.count(class_) << endl;
+    }
+
+    qDebug() << "Training Done";
 
 //	Mat testimage;
 //	testimage = imread("test.jpg",CV_LOAD_IMAGE_GRAYSCALE);
@@ -210,7 +192,7 @@ int vision::trainSVM(){
 //		float res = (*it).second.predict(hist,true);
 //		cout << "class: " << (*it).first << " --> " << res << endl;
 //	}
-	return 0;
+    return 0;
 }
 
 
@@ -222,8 +204,8 @@ int vision::trainSVM(){
 int vision::testImage(Mat testimage){
 	Mat hist;
 	Vector<pair<string,float>> result;
-	if(initVocabulary()!=0) return -1;
-	bowDescriptorExtractor->setVocabulary(vocabulary);
+    //if(initVocabulary()!=0) return -1;
+    //bowDescriptorExtractor->setVocabulary(vocabulary);
 
 //	testimage = imread("test.jpg",CV_LOAD_IMAGE_GRAYSCALE);
 	vector<KeyPoint> keypoints;

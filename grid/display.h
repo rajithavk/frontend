@@ -21,7 +21,7 @@ class display : public QMainWindow{
 
 public:
     explicit display(QWidget *parent = 0,
-                     map<int, QPixmap> *pics=0);
+                     multimap<int, QPixmap> *pics=0);
     ~display();
 
 private slots:
@@ -38,7 +38,7 @@ private:
     QSignalMapper *signalMapper_Edit;
     QSignalMapper *signalMapper_Delete;
     QSignalMapper *signalMapper_Replace;
-    map <int, QPixmap> *pics;
+    multimap <int, QPixmap> *pics;
     item_details *details;
 
 

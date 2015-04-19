@@ -1,6 +1,6 @@
 #include "imagecapture.h"
 #include "ui_imagecapture.h"
-
+#include "grid/display.h"
 //ImageCapture::ImageCapture(QWidget *parent,cv::VideoCapture *c) :
 ImageCapture::ImageCapture(QWidget *parent) :
 
@@ -27,6 +27,33 @@ ImageCapture::ImageCapture(QWidget *parent) :
     imgCount = 1;
     cvGrabber = false;
 
+
+    ////////////////////////////////////////////////////
+
+//    BOW *b = new BOW();
+//    b->initVocabulary(1);
+//    b->initSVMs(1);
+
+//    QMultiMap<int,vector<pair<string,float>>> tmpres = b->testFolder(QUrl(QDir::currentPath()+"/BOW/Recent"),1);
+//    b->saveXMLFile("Recent/A/" + QDateTime::currentDateTime().toString(Qt::ISODate),tmpres);
+
+//    multimap<int,QPixmap> res;
+//    for(QMultiMap<int,vector<pair<string,float > > >::iterator it=tmpres.begin();it!=tmpres.end();it++){
+//        vector<pair<string,float>>::iterator itv = it.value().begin();
+//        //qDebug() << QDir::currentPath()+"/BOW/images/"+ QString::fromStdString((*itv).first) + "/10.jpg";
+//        QPixmap mp(QDir::currentPath()+"/BOW/images/"+ QString::fromStdString((*itv).first) + "/10.jpg");
+//        qDebug() << QString::fromStdString((*itv).first).toInt();
+//        res.insert(pair<int,QPixmap>(QString::fromStdString((*itv).first).toInt(),mp));
+//    }
+//    //emit call_grid(res);
+//    multimap<int,QPixmap> *m = &res;
+//    //qDebug() << "Signal Emited to get the display";
+//    qDebug() << m->size();
+
+//    display *dis= new display(0,m);
+//    dis->show();
+
+    ///////////////////////////////////////////////////
 
 }
 
@@ -112,11 +139,12 @@ void ImageCapture::opencvGrabImage()
     qDebug() << "Here we go";
     while(cvIsGrabbing){
         if(vcap.read(image)){
-           // Rect rect(200,0,400,500);
-            //image = image(rect);
+            Rect rect(200,0,400,500);
+            image = image(rect);
             //qDebug() << segment(image);
             cvImage = new QImage(cvMatToQImage(image));
             emit newOpencvGrabbedImage(cvImage);
+
         }
     }
 }
@@ -245,16 +273,16 @@ void ImageCapture::on_pushButton_2_clicked()
 void ImageCapture::snapIt()
 {
     //QPixmap snap(QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage()));
-    vector<Mat> temp;
-    QThread::sleep(1);
+    //vector<Mat> temp;
+    //QThread::sleep(1);
     try {
         QPixmap t = QPixmap::fromImage(ui->graphicsViewImage->imageItem->getImage());
 
         //QString path = QDir::currentPath() + "/BOW/RecentSet/" + QString::number(imgCount) + ".jpg";
 
-        QString path = QDir::currentPath() + "/BOW/RecentSet/" + time.currentDateTime().toString(Qt::ISODate) + ".jpg";
-        t.save(path,"JPG");
-        temp = convert(ui->graphicsViewImage->imageItem->getImage());
+       // QString path = QDir::currentPath() + "/BOW/RecentSet/" + time.currentDateTime().toString(Qt::ISODate) + ".jpg";
+       // t.save(path,"JPG");
+       // temp = convert(ui->graphicsViewImage->imageItem->getImage());
         testImagesMap[imgCount++] = t;
         ui->labelLastImage->setPixmap(t);
         ui->labelLastImage->setScaledContents(true);
@@ -262,7 +290,7 @@ void ImageCapture::snapIt()
         qDebug() << e.code;
     }
     //testImages.insert(testImages.end(),temp.begin(),temp.end());
-    QThread::sleep(1);
+    //QThread::sleep(1);
     robot.publish("run");
     qDebug() << "Asked to Run";
 }
@@ -272,6 +300,7 @@ void ImageCapture::fromRobot(QString m)
     QMessageBox msg;
     if(m == "ud"){
         robot.publish("hm");
+        qDebug() << "Asked to go home";
         msg.setWindowTitle("Finished");
         msg.setText("Autorun Finished");
         msg.setIcon(QMessageBox::Information);
@@ -294,17 +323,25 @@ void ImageCapture::fromRobot(QString m)
             BOW *b = new BOW();
             b->initVocabulary(1);
             b->initSVMs(1);
-            QMultiMap<int,vector<pair<string,float>>> tmpres = b->testFolder(QUrl(QDir::currentPath()+"/BOW/Recent"),1);
 
-            map<int,QPixmap> res;
+            QMultiMap<int,vector<pair<string,float>>> tmpres = b->testFolder(QUrl(QDir::currentPath()+"/BOW/Recent"),1);
+            b->saveXMLFile("Recent/A/" + QDateTime::currentDateTime().toString(Qt::ISODate),tmpres);
+
+            multimap<int,QPixmap> res;
             for(QMultiMap<int,vector<pair<string,float > > >::iterator it=tmpres.begin();it!=tmpres.end();it++){
                 vector<pair<string,float>>::iterator itv = it.value().begin();
-                QPixmap mp(QDir::currentPath()+"BOW/images/"+ QString::fromStdString((*itv).first) + "/10.jpg");
-                res[QString::fromStdString((*itv).first).toInt()] = mp;
+                //qDebug() << QDir::currentPath()+"/BOW/images/"+ QString::fromStdString((*itv).first) + "/10.jpg";
+                QPixmap mp(QDir::currentPath()+"/BOW/images/"+ QString::fromStdString((*itv).first) + "/10.jpg");
+                qDebug() << QString::fromStdString((*itv).first).toInt();
+                res.insert(pair<int,QPixmap>(QString::fromStdString((*itv).first).toInt(),mp));
             }
+            //emit call_grid(res);
+            multimap<int,QPixmap> *m = &res;
+        //    //qDebug() << "Signal Emited to get the display";
+            qDebug() << m->size();
 
-            emit call_grid(res);
-            qDebug() << "Signal Emited to get the display";
+            display *dis= new display(0,m);
+            dis->show();
 
         }
     }

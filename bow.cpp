@@ -136,7 +136,7 @@ void BOW::on_btnTestFolder_clicked()
 {
    try {
         QUrl url = QFileDialog::getExistingDirectoryUrl(this,"Select Directory",QDir::currentPath(),QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
-        QMultiMap<int,vector<pair<string,float>>> results = testFolder(url,1);
+        QMultiMap<int,vector<pair<string,float>>> results = testFolder(url,0);
 
         saveXMLFile("betaresults",results);
   } catch (Exception e) {
@@ -229,6 +229,7 @@ void BOW::saveXMLFile(QString fileName, QMultiMap<int, vector<pair<string, float
          xmlWriter.writeEndElement();
  }
  xmlWriter.writeEndElement();
+    qDebug() << "XML Succefully Written";
 
  } catch (Exception e) {
      qDebug() << QString::fromStdString(e.err);

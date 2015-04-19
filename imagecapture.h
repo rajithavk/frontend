@@ -23,6 +23,7 @@
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
 #include "global_objects.h"
+#include "functions.hpp"
 
 using namespace cv;
 using namespace std;
@@ -65,6 +66,8 @@ private:
     void opencvGrabImage();
     QString URL;
     QImage *cvImage;
+    vision *b;
+
 
 signals:
     void gotImageSet(QVector<QPixmap>);

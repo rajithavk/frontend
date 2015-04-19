@@ -21,7 +21,6 @@
 #include <boost/filesystem/convenience.hpp>
 #include <iostream>
 #include <QDebug>
-#include <omp.h>
 
 #include <dirent.h>
 #include <unistd.h>
